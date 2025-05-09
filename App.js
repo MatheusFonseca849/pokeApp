@@ -1,14 +1,18 @@
+import 'react-native-reanimated';
+import 'react-native-gesture-handler'; // keep this at the very top
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
-import 'react-native-gesture-handler';
 import { PaperProvider } from 'react-native-paper';
 import DrawerRoutes from './src/navigation/DrawerRoutes';
 
 export default function App() {
   return (
-    <PaperProvider>
-      <NavigationContainer>
-        <DrawerRoutes/>
-      </NavigationContainer>
-    </PaperProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PaperProvider>
+        <NavigationContainer>
+          <DrawerRoutes />
+        </NavigationContainer>
+      </PaperProvider>
+    </GestureHandlerRootView>
   );
 }
