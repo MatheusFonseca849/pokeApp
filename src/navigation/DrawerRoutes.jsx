@@ -3,6 +3,7 @@ import React from 'react'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import HomeScreen from '../screens/HomeScreen'
 import { Ionicons } from "@expo/vector-icons";
+import FavoritesScreen from '../screens/FavoritesScreen';
 
 const Drawer = createDrawerNavigator()
 
@@ -16,6 +17,16 @@ export default function DrawerRoutes() {
           title: "Início",
           drawerIcon: (color, size) => (
             <Ionicons name="home" color={"#4264a8"} size={size} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+      name='Favorites'
+      component={FavoritesScreen}
+      options={{
+          title: "Favoritos",
+          drawerIcon: (color, size) => (
+            <Ionicons name="heart" color={"#4264a8"} size={size} />
           ),
         }}
       />

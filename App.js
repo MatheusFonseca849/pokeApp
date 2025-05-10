@@ -4,15 +4,18 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { PaperProvider } from 'react-native-paper';
 import DrawerRoutes from './src/navigation/DrawerRoutes';
+import PokemonProvider from './src/providers/PokemonContext';
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <PaperProvider>
-        <NavigationContainer>
-          <DrawerRoutes />
-        </NavigationContainer>
-      </PaperProvider>
+      <PokemonProvider>
+        <PaperProvider>
+          <NavigationContainer>
+            <DrawerRoutes />
+          </NavigationContainer>
+        </PaperProvider>
+      </PokemonProvider>
     </GestureHandlerRootView>
   );
 }
