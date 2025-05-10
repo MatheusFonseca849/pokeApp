@@ -1,9 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import React from 'react'
 import { createDrawerNavigator } from '@react-navigation/drawer'
-import HomeScreen from '../screens/HomeScreen'
 import { Ionicons } from "@expo/vector-icons";
-import FavoritesScreen from '../screens/FavoritesScreen';
+import { FavoritesStackScreen, HomeStackScreen } from './StackRoutes';
 
 const Drawer = createDrawerNavigator()
 
@@ -12,7 +11,7 @@ export default function DrawerRoutes() {
     <Drawer.Navigator>
       <Drawer.Screen
       name='Home'
-      component={HomeScreen}
+      component={HomeStackScreen}
       options={{
           title: "Início",
           drawerIcon: (color, size) => (
@@ -22,7 +21,7 @@ export default function DrawerRoutes() {
       />
       <Drawer.Screen
       name='Favorites'
-      component={FavoritesScreen}
+      component={FavoritesStackScreen}
       options={{
           title: "Favoritos",
           drawerIcon: (color, size) => (

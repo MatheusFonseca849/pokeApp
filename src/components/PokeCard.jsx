@@ -4,16 +4,18 @@ import { Image } from "react-native";
 import { Button } from "react-native-paper";
 import { useContext } from "react";
 import { PokemonContext } from "../providers/PokemonContext";
+import { useNavigation } from "@react-navigation/native";
 
 const PokeCard = ({item}) => {
 
+    const navigation = useNavigation();
 
     const {addToFavorites, removeFromFavorites, favoriteArray} = useContext(PokemonContext);
 
     const pokeId = item.url.slice(34, -1);
     const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokeId}.png`;
     return(
-        <Card style={styles.card}>
+        <Card style={styles.card} onPress={() => navigation.navigate('PokemonDetails', {id: pokeId})}>
         <Text style={styles.title}>{pokeId}</Text>
         <View style={styles.cardContainer}>
         <View style={styles.itemContainer}>

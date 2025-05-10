@@ -14,6 +14,7 @@ export const PokemonProvider = ({ children }) => {
     const [pokeDatabase, setPokeDatabase] = useState([]);
     const [searchText, setSearchText] = useState("");
     const [favoriteArray, setFavoriteArray] = useState([]);
+    const [favoritePokemon, setFavoritePokemon] = useState([]);
     
     const baseUrl = "https://pokeapi.co/api/v2/";
     useEffect(() => {
@@ -56,14 +57,41 @@ export const PokemonProvider = ({ children }) => {
           });
       };
 
+    const loadFavoritePokemon = async () => {
+        try {
+            setLoading(true);
+            // Use Promise.all to wait for all API requests to complete
+            const pokemonPromises = favoriteArray.map(id => 
+                axios.get(`${baseUrl}pokemon/${id}`)
+            );
+            
+            const responses = await Promise.all(pokemonPromises);
+            
+            // Transform the response data into the format PokeCard expects
+            const pokemonData = responses.map(response => ({
+                name: response.data.name,
+                url: `https://pokeapi.co/api/v2/pokemon/${response.data.id}/`
+            }));
+            
+            setFavoritePokemon(pokemonData);
+        } catch (error) {
+            console.error('Error loading favorite Pokemon:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const searchPokemon = (searchText) => {
         setSearchText(searchText);
-        const filteredPokemon = pokeDatabase.filter((pokemon) =>
-          pokemon.name.includes(searchText.toLowerCase())
-        );
+        
+        const filteredPokemon = pokeDatabase.filter((pokemon) =>{
+            return pokemon.name.includes(searchText.toLowerCase()) || pokemon.url.slice(34, -1) === searchText
+        });
+        console.log(filteredPokemon)
         setPokeList(filteredPokemon);
       };
 
+      
     const handleNext = () => {
         setLoading(true);
         axios
@@ -131,18 +159,18 @@ export const PokemonProvider = ({ children }) => {
     
     const swipeConfig = {
         velocityThreshold: 0.3,
-        directionalOffsetThreshold: 80,
+        directionalOffsetThreshold: 120,
         gestureIsClickThreshold: 5,
       };
 
       const onSwipeLeft = () => {
-        if (searchText == "") {
+        if (searchText == "" && next) {
           handleNext();
         }
       };
 
       const onSwipeRight = () => {
-        if (searchText == "") {
+        if (searchText == "" && previous) {
           handlePrevious();
         }
       };
@@ -157,6 +185,7 @@ export const PokemonProvider = ({ children }) => {
             searchText,
             loadPokemon,
             loadAllPokemon,
+            loadFavoritePokemon,
             searchPokemon,
             handleNext,
             handlePrevious,
@@ -166,7 +195,8 @@ export const PokemonProvider = ({ children }) => {
             addToFavorites,
             removeFromFavorites,
             favoriteArray,
-            setFavoriteArray
+            setFavoriteArray,
+            favoritePokemon
         }}>
             {children}
         </PokemonContext.Provider>
