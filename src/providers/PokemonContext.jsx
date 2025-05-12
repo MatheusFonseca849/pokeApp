@@ -17,6 +17,7 @@ export const PokemonProvider = ({ children }) => {
     const [favoritePokemon, setFavoritePokemon] = useState([]);
     
     const baseUrl = "https://pokeapi.co/api/v2/";
+
     useEffect(() => {
         AsyncStorage.getItem('favorites').then((favorites) => {
             if (favorites) {
@@ -46,7 +47,7 @@ export const PokemonProvider = ({ children }) => {
     const loadAllPokemon = () => {
         setLoading(true);
         axios
-          .get(`${baseUrl}pokemon?limit=100000&offset=0`)
+          .get(`${baseUrl}pokemon?limit=10000&offset=0`)
           .then((response) => {
             setPokeDatabase(response.data.results);
             setLoading(false);
@@ -124,17 +125,16 @@ export const PokemonProvider = ({ children }) => {
           });
       };
 
-    const addToFavorites = async (item) => {
-        console.log(item)
+    const addToFavorites = async (id) => {
+        console.log(id)
             try {
-                // const itemId = item.url.slice(34, -1);
                 const favorites = await AsyncStorage.getItem('favorites');
                 const favoritesList = favorites ? JSON.parse(favorites) : [];
-                favoritesList.push(item);
+                favoritesList.push(id);
                 await AsyncStorage.setItem('favorites', JSON.stringify(favoritesList));
                 // Update the state to trigger re-rendering
                 setFavoriteArray(favoritesList);
-                console.log(`Added ${item} to favorites`);
+                console.log(`Added ${id} to favorites`);
                 console.log(favoritesList)
             } catch (e) {
                 console.error(e);

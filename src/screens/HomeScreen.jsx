@@ -1,6 +1,6 @@
 import { StyleSheet, View, FlatList } from "react-native";
 import React, { useContext, useEffect } from "react";
-import { Searchbar } from "react-native-paper";
+import { IconButton, Searchbar } from "react-native-paper";
 import GestureRecognizer from "react-native-swipe-gestures";
 import { PokemonContext } from "../providers/PokemonContext";
 import PokeCard from "../components/PokeCard";
@@ -34,11 +34,20 @@ export default function HomeScreen() {
       onSwipeRight={onSwipeRight}
       config={swipeConfig}
     >
+    <View style={styles.searchContainer}>
       <Searchbar
         placeholder="Search Pokemon"
         onChangeText={searchPokemon}
         value={searchText}
+        style={styles.searchBar}
       />
+      <IconButton
+        mode="contained" 
+        style={styles.button} 
+        icon="filter" 
+        onPress={loadPokemon}
+      />
+    </View>
       <FlatList
         style={styles.list}
         data={pokeList}
@@ -50,12 +59,10 @@ export default function HomeScreen() {
       {searchText == "" && (
         <View style={styles.buttonContainer}>
           {previous && (
-            <PaginationButton action={handlePrevious}>
-              Previous
-            </PaginationButton>
+            <PaginationButton action={handlePrevious} icon={"chevron-left"} />
           )}
           {next && (
-            <PaginationButton action={handleNext}>Next</PaginationButton>
+            <PaginationButton action={handleNext} icon={"chevron-right"} />
           )}
         </View>
       )}
@@ -71,6 +78,29 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
   },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    gap: 8,
+  },
+
+  searchBar: {
+    flex: 1,
+    height: 40,
+    marginVertical: 0,
+  },
+
+  button: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 100,
+    marginLeft: 0,
+  },
+
   itemContainer: {
     display: "flex",
     justifyContent: "flex-start",

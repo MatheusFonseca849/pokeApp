@@ -23,7 +23,7 @@ export default function DrawerRoutes() {
       name='Favorites'
       component={FavoritesStackScreen}
       options={{
-          title: "Favoritos",
+          headerTitle: "Favoritos",
           drawerIcon: (color, size) => (
             <Ionicons name="heart" color={"#4264a8"} size={size} />
           ),

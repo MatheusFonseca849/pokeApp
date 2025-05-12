@@ -7,10 +7,12 @@ import {
   Card,
   Button,
   useTheme,
+  IconButton,
 } from "react-native-paper";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import { PokemonContext } from "../providers/PokemonContext";
 
 const PokemonDetailsScreen = ({ route }) => {
   const { id } = route.params;
@@ -18,6 +20,8 @@ const PokemonDetailsScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [sprites, setSprites] = useState({});
   const [currentSprite, setCurrentSprite] = useState("");
+
+  const { addToFavorites, removeFromFavorites, favoriteArray } = useContext(PokemonContext);
 
   const { colors } = useTheme();
 
@@ -39,7 +43,7 @@ const PokemonDetailsScreen = ({ route }) => {
   };
 
   const goToNextPokemon = () => {
-    if (parseInt(id) < 151) {
+    if (parseInt(id) < 1000000) {
       // Navigate to the next Pokémon
       const nextId = (parseInt(id) + 1).toString();
       // Update the route params without leaving the screen
@@ -93,84 +97,93 @@ const PokemonDetailsScreen = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <GestureRecognizer
-      onSwipeLeft={goToNextPokemon}
-      onSwipeRight={goToPreviousPokemon}
-      config={swipeConfig}
-      style={styles.flexContainer}
-    >
-      <ScrollView style={styles.container}>
-        <Card style={styles.card}>
-          <Text style={styles.title}>{pokemon?.name}</Text>
-
-          <View style={styles.imageContainer}>
-            <Button
-              icon="arrow-left"
-              onPress={() => handleSpriteChange("left")}
-            />
-            <Image source={{ uri: currentSprite }} style={styles.image} />
-            <Button
-              icon="arrow-right"
-              onPress={() => handleSpriteChange("right")}
-            />
-          </View>
-
-          <View style={styles.infoContainer}>
-            <Text style={styles.sectionTitle}>Types</Text>
-            <View style={styles.typesContainer}>
-              {pokemon?.types.map((typeInfo) => {
-                const typeName = typeInfo.type.name;
-                const backgroundColor = colors[typeName] || colors.surface; // fallback if type isn't defined
-
-                return (
-                  <Text
-                    key={typeName}
-                    style={[styles.type, { backgroundColor }]}
-                  >
-                    {typeName}
-                  </Text>
-                );
-              })}
+      <GestureRecognizer
+        onSwipeLeft={goToNextPokemon}
+        onSwipeRight={goToPreviousPokemon}
+        config={swipeConfig}
+        style={styles.flexContainer}
+      >
+        <ScrollView style={styles.container}>
+          <Card style={styles.card}>
+            <View style={styles.headerContainer}>
+              <IconButton
+                icon="arrow-left"
+                onPress={() => navigation.goBack()}
+              />
+            <Text style={styles.title}>#{pokemon?.id} {pokemon?.name}</Text>
+            <IconButton
+            icon={favoriteArray.includes(pokemon.id.toString()) ? "heart" : "heart-outline"}
+            style={styles.favButton}
+            onPress={() => {
+              favoriteArray.includes(pokemon.id.toString()) ? removeFromFavorites(pokemon.id.toString()) : addToFavorites(pokemon.id.toString())
+            }}
+            >
+            </IconButton>
             </View>
 
-            <Text style={styles.sectionTitle}>Stats</Text>
-            {pokemon?.stats.map((stat) => (
-              <View key={stat.stat.name} style={styles.statRow}>
-                <Text style={styles.statName}>{stat.stat.name}:</Text>
-                <Text style={styles.statValue}>{stat.base_stat}</Text>
+            <View style={styles.imageContainer}>
+              <Button
+                icon="arrow-left"
+                onPress={() => handleSpriteChange("left")}
+              />
+              <Image source={{ uri: currentSprite }} style={styles.image} />
+              <Button
+                icon="arrow-right"
+                onPress={() => handleSpriteChange("right")}
+              />
+            </View>
+
+            <View style={styles.infoContainer}>
+              <Text style={styles.sectionTitle}>Types</Text>
+              <View style={styles.typesContainer}>
+                {pokemon?.types.map((typeInfo) => {
+                  const typeName = typeInfo.type.name;
+                  const backgroundColor = colors[typeName] || colors.surface; // fallback if type isn't defined
+
+                  return (
+                    <Text
+                      key={typeName}
+                      style={[styles.type, { backgroundColor }]}
+                    >
+                      {typeName}
+                    </Text>
+                  );
+                })}
               </View>
-            ))}
 
-            <Text style={styles.sectionTitle}>Abilities</Text>
-            {pokemon?.abilities.map((ability) => (
-              <Text key={ability.ability.name} style={styles.ability}>
-                {ability.ability.name}
-              </Text>
-            ))}
-          </View>
-        <View style={styles.navigationButtons}>
-          <Button
-            icon="chevron-left"
-            mode="contained"
-            onPress={goToPreviousPokemon}
-            disabled={parseInt(id) <= 1}
-          >
-            Previous
-          </Button>
+              <Text style={styles.sectionTitle}>Stats</Text>
+              {pokemon?.stats.map((stat) => (
+                <View key={stat.stat.name} style={styles.statRow}>
+                  <Text style={styles.statName}>{stat.stat.name}:</Text>
+                  <Text style={styles.statValue}>{stat.base_stat}</Text>
+                </View>
+              ))}
 
-          <Button
-            icon="chevron-right"
-            mode="contained"
-            onPress={goToNextPokemon}
-            disabled={parseInt(id) >= 151}
-            iconPosition="right"
-          >
-            Next
-          </Button>
-        </View>
-        </Card>
-      </ScrollView>
-    </GestureRecognizer>
+              <Text style={styles.sectionTitle}>Abilities</Text>
+              {pokemon?.abilities.map((ability) => (
+                <Text key={ability.ability.name} style={styles.ability}>
+                  {ability.ability.name}
+                </Text>
+              ))}
+            </View>
+            <View style={styles.navigationButtons}>
+              <IconButton
+                style={styles.button}
+                icon="chevron-left"
+                onPress={goToPreviousPokemon}
+                disabled={parseInt(id) <= 1}
+              />
+
+              <IconButton
+                style={styles.button}
+                icon="chevron-right"
+                onPress={goToNextPokemon}
+                disabled={parseInt(id) >= 1000000}
+              />
+            </View>
+          </Card>
+        </ScrollView>
+      </GestureRecognizer>
     </SafeAreaView>
   );
 };
@@ -191,7 +204,12 @@ const styles = StyleSheet.create({
   card: {
     padding: 16,
     marginBottom: 8,
-    
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
   },
   title: {
     fontSize: 28,

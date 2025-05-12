@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Card, IconButton, Text } from "react-native-paper";
 import { Image } from "react-native";
 import { Button } from "react-native-paper";
 import { useContext } from "react";
@@ -29,14 +29,14 @@ const PokeCard = ({item}) => {
           <Text>{item.name}</Text>
         </View>
         <View style={styles.buttonContainer}>
-            <Button
+            <IconButton
             icon={favoriteArray.includes(pokeId) ? "heart" : "heart-outline"}
             style={styles.favButton}
             onPress={() => {
               favoriteArray.includes(pokeId) ? removeFromFavorites(pokeId) : addToFavorites(pokeId)
             }}
             >
-            </Button>
+            </IconButton>
         </View>
         </View>
       </Card>

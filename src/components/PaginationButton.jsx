@@ -1,21 +1,23 @@
 import { StyleSheet } from "react-native"
-import { Button } from "react-native-paper"
+import { Button, IconButton } from "react-native-paper"
 
-const PaginationButton = ({action, children}) => {
+const PaginationButton = ({action, icon, children}) => {
     return(
-        <Button
+        <IconButton
             mode="contained"
             onPress={action}
             style={styles.button}
+            icon={icon}
           >
             {children}
-          </Button>
+          </IconButton>
     )
 }
 
 const styles = StyleSheet.create({
     button: {
-        width: 100,
+        borderRadius: 100,
+        alignSelf: "flex-start",
     }
 })
 
