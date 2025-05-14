@@ -1,10 +1,11 @@
-import { StyleSheet, View, FlatList } from "react-native";
-import React, { useContext, useEffect } from "react";
-import { IconButton, Searchbar } from "react-native-paper";
+import { StyleSheet, View, FlatList, Animated, Easing } from "react-native";
+import React, { useContext, useEffect, useState, useRef } from "react";
+import { IconButton, Searchbar, List } from "react-native-paper";
 import GestureRecognizer from "react-native-swipe-gestures";
 import { PokemonContext } from "../providers/PokemonContext";
 import PokeCard from "../components/PokeCard";
 import PaginationButton from "../components/PaginationButton";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function HomeScreen() {
   const {
@@ -27,6 +28,28 @@ export default function HomeScreen() {
     loadAllPokemon();
   }, []);
 
+  const [filtersVisible, setFiltersVisible] = useState(false);
+  const animatedHeight = useRef(new Animated.Value(0)).current;
+
+  const toggleFilters = () => {
+    if (filtersVisible) {
+      Animated.timing(animatedHeight, {
+        toValue: 0,
+        duration: 300,
+        easing: Easing.ease,
+        useNativeDriver: false,
+      }).start(() => setFiltersVisible(false));
+    } else {
+      setFiltersVisible(true);
+      Animated.timing(animatedHeight, {
+        toValue: 360, // Adjust based on your content
+        duration: 300,
+        easing: Easing.ease,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
+
   return (
     <GestureRecognizer
       style={styles.container}
@@ -34,20 +57,60 @@ export default function HomeScreen() {
       onSwipeRight={onSwipeRight}
       config={swipeConfig}
     >
-    <View style={styles.searchContainer}>
-      <Searchbar
-        placeholder="Search Pokemon"
-        onChangeText={searchPokemon}
-        value={searchText}
-        style={styles.searchBar}
-      />
-      <IconButton
-        mode="contained" 
-        style={styles.button} 
-        icon="filter" 
-        onPress={loadPokemon}
-      />
-    </View>
+      <View style={styles.searchContainer}>
+        <Searchbar
+          placeholder="Search Pokemon"
+          onChangeText={searchPokemon}
+          value={searchText}
+          style={styles.searchBar}
+        />
+        <IconButton
+          mode="contained"
+          style={styles.button}
+          icon="filter"
+          onPress={toggleFilters}
+        />
+      </View>
+      <Animated.View
+        style={[styles.animatedContainer, { height: animatedHeight }]}
+      >
+        {filtersVisible && (
+          <ScrollView>
+          <List.Section>
+            <List.Accordion
+              title="Filter by Type"
+              left={(props) => <List.Icon {...props} icon="shape" />}
+            >
+              <List.Item title="Fire" onPress={() => console.log("Fire")} />
+              <List.Item title="Water" onPress={() => console.log("Water")} />
+              <List.Item title="Grass" onPress={() => console.log("Grass")} />
+              <List.Item title="Electric" onPress={() => console.log("Electric")} />
+              <List.Item title="Normal" onPress={() => console.log("Normal")} />
+              <List.Item title="Ice" onPress={() => console.log("Ice")} />
+              <List.Item title="Fighting" onPress={() => console.log("Fighting")} />
+              <List.Item title="Poison" onPress={() => console.log("Poison")} />
+              <List.Item title="Ground" onPress={() => console.log("Ground")} />
+              <List.Item title="Flying" onPress={() => console.log("Flying")} />
+              <List.Item title="Psychic" onPress={() => console.log("Psychic")} />
+              <List.Item title="Bug" onPress={() => console.log("Bug")} />
+              <List.Item title="Rock" onPress={() => console.log("Rock")} />
+              <List.Item title="Ghost" onPress={() => console.log("Ghost")} />
+              <List.Item title="Dragon" onPress={() => console.log("Dragon")} />
+              <List.Item title="Dark" onPress={() => console.log("Dark")} />
+              <List.Item title="Steel" onPress={() => console.log("Steel")} />
+              <List.Item title="Fairy" onPress={() => console.log("Fairy")} />
+            </List.Accordion>
+            <List.Accordion
+              title="Filter by Generation"
+              left={(props) => <List.Icon {...props} icon="history" />}
+            >
+              <List.Item title="Gen 1" onPress={() => console.log("Gen 1")} />
+              <List.Item title="Gen 2" onPress={() => console.log("Gen 2")} />
+            </List.Accordion>
+          </List.Section>
+          </ScrollView>
+        )}
+      </Animated.View>
       <FlatList
         style={styles.list}
         data={pokeList}
@@ -72,18 +135,24 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   list: {
-    marginBottom: 32,
+    marginBottom: 5,
   },
   container: {
     flex: 1,
     width: "100%",
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 8,
     paddingVertical: 8,
     gap: 8,
+  },
+
+  animatedContainer: {
+    overflow: "hidden",
+    paddingHorizontal: 12,
+    backgroundColor: "#fff", // optional, match your theme
   },
 
   searchBar: {

@@ -15,9 +15,8 @@ const FavoritesScreen = () => {
   }, [favoriteArray]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       <View style={{ flex: 1, padding: 10 }}>
-        <Text style={{ fontSize: 24, marginBottom: 10 }}>Favorites</Text>
 
         {loading ? (
           <View style={styles.loadingContainer}>
@@ -31,7 +30,7 @@ const FavoritesScreen = () => {
             renderItem={({ item }) => <PokeCard item={item} />}
           />
         ) : (
-          <Text>You haven't added any favorites yet!</Text>
+          <Text>Você ainda não adicionou nenhum favorito!</Text>
         )}
       </View>
     </SafeAreaView>

@@ -31,7 +31,7 @@ export const PokemonProvider = ({ children }) => {
     const loadPokemon = async () => {
         setLoading(true);
         axios
-          .get(`${baseUrl}pokemon`)
+          .get(`${baseUrl}pokemon?limit=25`)
           .then((response) => {
             setPokeList(response.data.results);
             setNext(response.data.next);
@@ -47,7 +47,7 @@ export const PokemonProvider = ({ children }) => {
     const loadAllPokemon = () => {
         setLoading(true);
         axios
-          .get(`${baseUrl}pokemon?limit=10000&offset=0`)
+          .get(`${baseUrl}pokemon?limit=100000&offset=0`)
           .then((response) => {
             setPokeDatabase(response.data.results);
             setLoading(false);
