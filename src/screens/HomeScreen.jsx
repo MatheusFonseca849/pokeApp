@@ -7,6 +7,7 @@ import PokeCard from "../components/PokeCard";
 import PaginationButton from "../components/PaginationButton";
 import { ScrollView } from "react-native-gesture-handler";
 import axios from "axios";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const baseUrl = "https://pokeapi.co/api/v2/";
@@ -99,6 +100,7 @@ export default function HomeScreen() {
       onSwipeRight={onSwipeRight}
       config={swipeConfig}
     >
+      <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       <View style={styles.searchContainer}>
         <Searchbar
           placeholder="Search Pokemon"
@@ -173,6 +175,7 @@ export default function HomeScreen() {
           )}
         </View>
       )}
+      </SafeAreaView>
     </GestureRecognizer>
   );
 }
@@ -226,6 +229,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
     justifyContent: "center",
-    marginBottom: 62,
   },
 });
