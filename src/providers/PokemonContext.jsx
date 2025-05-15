@@ -15,6 +15,7 @@ export const PokemonProvider = ({ children }) => {
     const [searchText, setSearchText] = useState("");
     const [favoriteArray, setFavoriteArray] = useState([]);
     const [favoritePokemon, setFavoritePokemon] = useState([]);
+    const [isFiltering, setIsFiltering] = useState(false);
     
     const baseUrl = "https://pokeapi.co/api/v2/";
 
@@ -28,21 +29,20 @@ export const PokemonProvider = ({ children }) => {
     }, []);
 
 
-    const loadPokemon = async () => {
+    const loadPokemon = async (url = `${baseUrl}pokemon?limit=25`) => {
+      try {
         setLoading(true);
-        axios
-          .get(`${baseUrl}pokemon?limit=25`)
-          .then((response) => {
-            setPokeList(response.data.results);
-            setNext(response.data.next);
-            response.data.previous && setPrevious(response.data.previous);
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.error("Failed to load Pokémon:", error);
-            setLoading(false);
-          });
-      };
+        setIsFiltering(false); // in case user is clearing filters
+        const response = await axios.get(url);
+        setPokeList(response.data.results);
+        setNext(response.data.next);
+        setPrevious(response.data.previous ?? null);
+      } catch (error) {
+        console.error("Failed to load Pokémon:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     const loadAllPokemon = () => {
         setLoading(true);
@@ -93,36 +93,36 @@ export const PokemonProvider = ({ children }) => {
       };
 
       
-    const handleNext = () => {
-        setLoading(true);
-        axios
-          .get(next)
-          .then((response) => {
-            setPokeList(response.data.results);
-            setNext(response.data.next);
-            response.data.previous && setPrevious(response.data.previous);
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.error("Failed to load Pokémon:", error);
-            setLoading(false);
-          });
+      const handleNext = async () => {
+        if (isFiltering || !next) return;
+      
+        try {
+          setLoading(true);
+          const response = await axios.get(next);
+          setPokeList(response.data.results);
+          setNext(response.data.next);
+          setPrevious(response.data.previous ?? null); // clear if null
+        } catch (error) {
+          console.error("Failed to load next Pokémon:", error);
+        } finally {
+          setLoading(false);
+        }
       };
 
-    const handlePrevious = () => {
-        setLoading(true);
-        axios
-          .get(previous)
-          .then((response) => {
-            setPokeList(response.data.results);
-            setNext(response.data.next);
-            setPrevious(response.data.previous);
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.error("Failed to load Pokémon:", error);
-            setLoading(false);
-          });
+      const handlePrevious = async () => {
+        if (isFiltering || !previous) return;
+      
+        try {
+          setLoading(true);
+          const response = await axios.get(previous);
+          setPokeList(response.data.results);
+          setNext(response.data.next);
+          setPrevious(response.data.previous ?? null);
+        } catch (error) {
+          console.error("Failed to load previous Pokémon:", error);
+        } finally {
+          setLoading(false);
+        }
       };
 
     const addToFavorites = async (id) => {
@@ -182,6 +182,10 @@ export const PokemonProvider = ({ children }) => {
             next,
             previous,
             pokeDatabase,
+            pokeList,
+            setPokeList,
+            isFiltering,
+            setIsFiltering,
             searchText,
             loadPokemon,
             loadAllPokemon,

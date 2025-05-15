@@ -6,10 +6,20 @@ import { PokemonContext } from "../providers/PokemonContext";
 import PokeCard from "../components/PokeCard";
 import PaginationButton from "../components/PaginationButton";
 import { ScrollView } from "react-native-gesture-handler";
+import axios from "axios";
 
 export default function HomeScreen() {
+  const baseUrl = "https://pokeapi.co/api/v2/";
+  const [contentHeight, setContentHeight] = useState(0);
+  const [pokeTypes, setPokeTypes] = useState([]);
+  const [filtersVisible, setFiltersVisible] = useState(false);
+  
+
   const {
     pokeList,
+    setPokeList,
+    isFiltering,
+    setIsFiltering,
     previous,
     next,
     searchText,
@@ -28,7 +38,39 @@ export default function HomeScreen() {
     loadAllPokemon();
   }, []);
 
-  const [filtersVisible, setFiltersVisible] = useState(false);
+  useEffect(() => {
+    if (filtersVisible) {
+      getPokeTypes();
+    }
+  }, [filtersVisible]);
+
+  useEffect(() => {
+    if (filtersVisible) {
+      Animated.timing(animatedHeight, {
+        toValue: contentHeight,
+        duration: 300,
+        easing: Easing.ease,
+        useNativeDriver: false,
+      }).start();
+    }
+  }, [contentHeight]);
+
+  const getPokeTypes = async () => {
+    axios.get(`${baseUrl}type`).then((response) => {
+      setPokeTypes(response.data.results);
+    });
+  };
+
+  const getPokemonByType = async (type) => {
+    try {
+      const response = await axios.get(`${baseUrl}type/${type}`);
+      const pokemonList = response.data.pokemon.map((p) => p.pokemon);
+      setPokeList(pokemonList);
+      setIsFiltering(true);
+    } catch (error) {
+      console.error("Erro ao buscar Pokémon por tipo:", error);
+    }
+  };
   const animatedHeight = useRef(new Animated.Value(0)).current;
 
   const toggleFilters = () => {
@@ -42,7 +84,7 @@ export default function HomeScreen() {
     } else {
       setFiltersVisible(true);
       Animated.timing(animatedHeight, {
-        toValue: 360, // Adjust based on your content
+        toValue: contentHeight,
         duration: 300,
         easing: Easing.ease,
         useNativeDriver: false,
@@ -76,38 +118,40 @@ export default function HomeScreen() {
       >
         {filtersVisible && (
           <ScrollView>
-          <List.Section>
-            <List.Accordion
-              title="Filter by Type"
-              left={(props) => <List.Icon {...props} icon="shape" />}
+            <View
+              onLayout={(event) => {
+                const { height } = event.nativeEvent.layout;
+                setContentHeight(height);
+              }}
             >
-              <List.Item title="Fire" onPress={() => console.log("Fire")} />
-              <List.Item title="Water" onPress={() => console.log("Water")} />
-              <List.Item title="Grass" onPress={() => console.log("Grass")} />
-              <List.Item title="Electric" onPress={() => console.log("Electric")} />
-              <List.Item title="Normal" onPress={() => console.log("Normal")} />
-              <List.Item title="Ice" onPress={() => console.log("Ice")} />
-              <List.Item title="Fighting" onPress={() => console.log("Fighting")} />
-              <List.Item title="Poison" onPress={() => console.log("Poison")} />
-              <List.Item title="Ground" onPress={() => console.log("Ground")} />
-              <List.Item title="Flying" onPress={() => console.log("Flying")} />
-              <List.Item title="Psychic" onPress={() => console.log("Psychic")} />
-              <List.Item title="Bug" onPress={() => console.log("Bug")} />
-              <List.Item title="Rock" onPress={() => console.log("Rock")} />
-              <List.Item title="Ghost" onPress={() => console.log("Ghost")} />
-              <List.Item title="Dragon" onPress={() => console.log("Dragon")} />
-              <List.Item title="Dark" onPress={() => console.log("Dark")} />
-              <List.Item title="Steel" onPress={() => console.log("Steel")} />
-              <List.Item title="Fairy" onPress={() => console.log("Fairy")} />
-            </List.Accordion>
-            <List.Accordion
-              title="Filter by Generation"
-              left={(props) => <List.Icon {...props} icon="history" />}
-            >
-              <List.Item title="Gen 1" onPress={() => console.log("Gen 1")} />
-              <List.Item title="Gen 2" onPress={() => console.log("Gen 2")} />
-            </List.Accordion>
-          </List.Section>
+              <List.Section>
+                <List.Accordion
+                  title="Filter by Type"
+                  left={(props) => <List.Icon {...props} icon="shape" />}
+                >
+                  {pokeTypes.map((type) => (
+                    <List.Item
+                      title={type.name.charAt(0).toUpperCase() + type.name.slice(1)}
+                      key={type.name}
+                      onPress={() => getPokemonByType(type.name)}
+                    />
+                  ))}
+                </List.Accordion>
+                <List.Accordion
+                  title="Filter by Generation"
+                  left={(props) => <List.Icon {...props} icon="history" />}
+                >
+                  <List.Item
+                    title="Gen 1"
+                    onPress={() => console.log("Gen 1")}
+                  />
+                  <List.Item
+                    title="Gen 2"
+                    onPress={() => console.log("Gen 2")}
+                  />
+                </List.Accordion>
+              </List.Section>
+            </View>
           </ScrollView>
         )}
       </Animated.View>
@@ -119,7 +163,7 @@ export default function HomeScreen() {
           return <PokeCard item={item} />;
         }}
       />
-      {searchText == "" && (
+      {(searchText == "" && !isFiltering) && (
         <View style={styles.buttonContainer}>
           {previous && (
             <PaginationButton action={handlePrevious} icon={"chevron-left"} />
