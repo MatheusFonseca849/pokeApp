@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native"
-import { Button, IconButton } from "react-native-paper"
+import { IconButton } from "react-native-paper"
 
 const PaginationButton = ({action, icon, children}) => {
     return(

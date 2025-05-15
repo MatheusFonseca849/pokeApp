@@ -14,7 +14,6 @@ export default function HomeScreen() {
   const [contentHeight, setContentHeight] = useState(0);
   const [pokeTypes, setPokeTypes] = useState([]);
   const [filtersVisible, setFiltersVisible] = useState(false);
-  
 
   const {
     pokeList,
@@ -100,81 +99,93 @@ export default function HomeScreen() {
       onSwipeRight={onSwipeRight}
       config={swipeConfig}
     >
-      <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
-      <View style={styles.searchContainer}>
-        <Searchbar
-          placeholder="Search Pokemon"
-          onChangeText={searchPokemon}
-          value={searchText}
-          style={styles.searchBar}
-        />
-        <IconButton
-          mode="contained"
-          style={styles.button}
-          icon="filter"
-          onPress={toggleFilters}
-        />
-      </View>
-      <Animated.View
-        style={[styles.animatedContainer, { height: animatedHeight }]}
+      <SafeAreaView
+        style={styles.container}
+        edges={["bottom", "left", "right"]}
       >
-        {filtersVisible && (
-          <ScrollView>
-            <View
-              onLayout={(event) => {
-                const { height } = event.nativeEvent.layout;
-                setContentHeight(height);
-              }}
-            >
-              <List.Section>
-                <List.Accordion
-                  title="Filter by Type"
-                  left={(props) => <List.Icon {...props} icon="shape" />}
-                >
-                  {pokeTypes.map((type) => (
-                    <List.Item
-                      title={type.name.charAt(0).toUpperCase() + type.name.slice(1)}
-                      key={type.name}
-                      onPress={() => getPokemonByType(type.name)}
-                    />
-                  ))}
-                </List.Accordion>
-                <List.Accordion
-                  title="Filter by Generation"
-                  left={(props) => <List.Icon {...props} icon="history" />}
-                >
-                  <List.Item
-                    title="Gen 1"
-                    onPress={() => console.log("Gen 1")}
-                  />
-                  <List.Item
-                    title="Gen 2"
-                    onPress={() => console.log("Gen 2")}
-                  />
-                </List.Accordion>
-              </List.Section>
-            </View>
-          </ScrollView>
-        )}
-      </Animated.View>
-      <FlatList
-        style={styles.list}
-        data={pokeList}
-        keyExtractor={(item) => item.name}
-        renderItem={({ item }) => {
-          return <PokeCard item={item} />;
-        }}
-      />
-      {(searchText == "" && !isFiltering) && (
-        <View style={styles.buttonContainer}>
-          {previous && (
-            <PaginationButton action={handlePrevious} icon={"chevron-left"} />
-          )}
-          {next && (
-            <PaginationButton action={handleNext} icon={"chevron-right"} />
-          )}
+        <View style={styles.searchContainer}>
+          <Searchbar
+            placeholder="Search Pokemon"
+            onChangeText={searchPokemon}
+            value={searchText}
+            style={styles.searchBar}
+          />
+          <IconButton
+            mode="contained"
+            style={styles.button}
+            icon="filter"
+            onPress={toggleFilters}
+          />
         </View>
-      )}
+        <Animated.View
+          style={[styles.animatedContainer, { height: animatedHeight }]}
+        >
+          {filtersVisible && (
+            <ScrollView>
+              <View
+                onLayout={(event) => {
+                  const { height } = event.nativeEvent.layout;
+                  setContentHeight(height);
+                }}
+              >
+                <IconButton
+                  icon="close"
+                  onPress={() => {
+                    setIsFiltering(false);
+                    loadPokemon(); // volta para a listagem padrão
+                  }}
+                />
+                <List.Section>
+                  <List.Accordion
+                    title="Filter by Type"
+                    left={(props) => <List.Icon {...props} icon="shape" />}
+                  >
+                    {pokeTypes.map((type) => (
+                      <List.Item
+                        title={
+                          type.name.charAt(0).toUpperCase() + type.name.slice(1)
+                        }
+                        key={type.name}
+                        onPress={() => getPokemonByType(type.name)}
+                      />
+                    ))}
+                  </List.Accordion>
+                  <List.Accordion
+                    title="Filter by Generation"
+                    left={(props) => <List.Icon {...props} icon="history" />}
+                  >
+                    <List.Item
+                      title="Gen 1"
+                      onPress={() => console.log("Gen 1")}
+                    />
+                    <List.Item
+                      title="Gen 2"
+                      onPress={() => console.log("Gen 2")}
+                    />
+                  </List.Accordion>
+                </List.Section>
+              </View>
+            </ScrollView>
+          )}
+        </Animated.View>
+        <FlatList
+          style={styles.list}
+          data={pokeList}
+          keyExtractor={(item) => item.name}
+          renderItem={({ item }) => {
+            return <PokeCard item={item} />;
+          }}
+        />
+        {searchText == "" && !isFiltering && (
+          <View style={styles.buttonContainer}>
+            {previous && (
+              <PaginationButton action={handlePrevious} icon={"chevron-left"} />
+            )}
+            {next && (
+              <PaginationButton action={handleNext} icon={"chevron-right"} />
+            )}
+          </View>
+        )}
       </SafeAreaView>
     </GestureRecognizer>
   );
