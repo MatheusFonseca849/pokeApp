@@ -3,6 +3,7 @@ import PokemonDetailsScreen from "../screens/PokemonDetailsScreen";
 import HomeScreen from "../screens/HomeScreen";
 import FavoritesScreen from "../screens/FavoritesScreen";
 import ItemsScreen from "../screens/ItemsScreen";
+import ItemDetailsScreen from "../screens/ItemDetailsScreen";
 
 const HomeStack = createStackNavigator();
 const FavoritesStack = createStackNavigator();
@@ -48,6 +49,11 @@ export const ItemsStackScreen = () => {
       <ItemsStack.Screen
         name="ItemsScreen"
         component={ItemsScreen}
+        options={{ headerShown: false }}
+      />
+      <ItemsStack.Screen
+        name="ItemDetails"
+        component={ItemDetailsScreen}
         options={{ headerShown: false }}
       />
     </ItemsStack.Navigator>
