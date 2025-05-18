@@ -1,8 +1,8 @@
-import { createContext, useEffect } from "react";
+import { createContext, useEffect, useContext } from "react";
 import React, { useState } from "react";
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { FilterContext } from "./FilterContext";
 
 export const PokemonContext = createContext();
 
@@ -15,7 +15,8 @@ export const PokemonProvider = ({ children }) => {
     const [searchText, setSearchText] = useState("");
     const [favoriteArray, setFavoriteArray] = useState([]);
     const [favoritePokemon, setFavoritePokemon] = useState([]);
-    const [isFiltering, setIsFiltering] = useState(false);
+
+    const {isFiltering, setIsFiltering} = useContext(FilterContext);
     
     const baseUrl = "https://pokeapi.co/api/v2/";
 

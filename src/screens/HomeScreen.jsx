@@ -6,20 +6,26 @@ import { PokemonContext } from "../providers/PokemonContext";
 import PokeCard from "../components/PokeCard";
 import PaginationButton from "../components/PaginationButton";
 import { ScrollView } from "react-native-gesture-handler";
-import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { FilterContext } from "../providers/FilterContext";
 
 export default function HomeScreen() {
-  const baseUrl = "https://pokeapi.co/api/v2/";
   const [contentHeight, setContentHeight] = useState(0);
-  const [pokeTypes, setPokeTypes] = useState([]);
+
   const [filtersVisible, setFiltersVisible] = useState(false);
+
+  const { 
+    isFiltering, 
+    pokeTypes, 
+    selectedTypes,
+    getPokeTypes,
+    toggleTypeSelection,
+    clearTypeSelection
+  } = useContext(FilterContext);
 
   const {
     pokeList,
     setPokeList,
-    isFiltering,
-    setIsFiltering,
     previous,
     next,
     searchText,
@@ -33,6 +39,8 @@ export default function HomeScreen() {
     swipeConfig,
   } = useContext(PokemonContext);
 
+  const animatedHeight = useRef(new Animated.Value(0)).current;
+  
   useEffect(() => {
     loadPokemon();
     loadAllPokemon();
@@ -55,23 +63,6 @@ export default function HomeScreen() {
     }
   }, [contentHeight]);
 
-  const getPokeTypes = async () => {
-    axios.get(`${baseUrl}type`).then((response) => {
-      setPokeTypes(response.data.results);
-    });
-  };
-
-  const getPokemonByType = async (type) => {
-    try {
-      const response = await axios.get(`${baseUrl}type/${type}`);
-      const pokemonList = response.data.pokemon.map((p) => p.pokemon);
-      setPokeList(pokemonList);
-      setIsFiltering(true);
-    } catch (error) {
-      console.error("Erro ao buscar Pokémon por tipo:", error);
-    }
-  };
-  const animatedHeight = useRef(new Animated.Value(0)).current;
 
   const toggleFilters = () => {
     if (filtersVisible) {
@@ -91,6 +82,7 @@ export default function HomeScreen() {
       }).start();
     }
   };
+
 
   return (
     <GestureRecognizer
@@ -113,32 +105,34 @@ export default function HomeScreen() {
           <IconButton
             mode="contained"
             style={styles.button}
-            icon="filter"
+            icon={filtersVisible ? "filter" : "filter-outline"}
             onPress={toggleFilters}
           />
         </View>
         <Animated.View
-          style={[styles.animatedContainer, { height: animatedHeight }]}
+          style={[styles.animatedContainer, { maxHeight: animatedHeight }]}
         >
           {filtersVisible && (
             <ScrollView>
               <View
+                style={{ flexGrow: 1 }}
                 onLayout={(event) => {
                   const { height } = event.nativeEvent.layout;
                   setContentHeight(height);
                 }}
               >
-                <IconButton
-                  icon="close"
-                  onPress={() => {
-                    setIsFiltering(false);
-                    loadPokemon(); // volta para a listagem padrão
-                  }}
-                />
+                {selectedTypes.length > 0 && (
+                  <IconButton
+                    icon="close-circle"
+                    onPress={() => clearTypeSelection(loadPokemon)}
+                  />
+                )}
                 <List.Section>
                   <List.Accordion
                     title="Filter by Type"
                     left={(props) => <List.Icon {...props} icon="shape" />}
+                    multiple  
+                    
                   >
                     {pokeTypes.map((type) => (
                       <List.Item
@@ -146,7 +140,22 @@ export default function HomeScreen() {
                           type.name.charAt(0).toUpperCase() + type.name.slice(1)
                         }
                         key={type.name}
-                        onPress={() => getPokemonByType(type.name)}
+                        onPress={() => toggleTypeSelection(type.name, setPokeList, loadPokemon)}
+                        left={(props) => (
+                          <List.Icon
+                            {...props}
+                            icon={
+                              selectedTypes.includes(type.name)
+                                ? "check-circle"
+                                : "checkbox-blank-circle-outline"
+                            }
+                            color={
+                              selectedTypes.includes(type.name)
+                                ? "#007aff"
+                                : undefined
+                            }
+                          />
+                        )}
                       />
                     ))}
                   </List.Accordion>

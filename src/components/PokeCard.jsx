@@ -1,7 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { Card, IconButton, Text } from "react-native-paper";
 import { Image } from "react-native";
-import { Button } from "react-native-paper";
 import { useContext } from "react";
 import { PokemonContext } from "../providers/PokemonContext";
 import { useNavigation } from "@react-navigation/native";
