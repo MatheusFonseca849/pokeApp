@@ -18,9 +18,13 @@ export default function HomeScreen() {
     isFiltering, 
     pokeTypes, 
     selectedTypes,
+    selectedGenerations,
     getPokeTypes,
+    generations,
+    getGenerations,
     toggleTypeSelection,
-    clearTypeSelection
+    toggleGenerationSelection,
+    clearSelection
   } = useContext(FilterContext);
 
   const {
@@ -40,15 +44,16 @@ export default function HomeScreen() {
   } = useContext(PokemonContext);
 
   const animatedHeight = useRef(new Animated.Value(0)).current;
-  
+
   useEffect(() => {
     loadPokemon();
     loadAllPokemon();
   }, []);
 
   useEffect(() => {
-    if (filtersVisible) {
+    if (filtersVisible && pokeTypes.length === 0) {
       getPokeTypes();
+      getGenerations();
     }
   }, [filtersVisible]);
 
@@ -121,15 +126,15 @@ export default function HomeScreen() {
                   setContentHeight(height);
                 }}
               >
-                {selectedTypes.length > 0 && (
+                {(selectedTypes.length > 0 || selectedGenerations.length > 0) && (
                   <IconButton
                     icon="close-circle"
-                    onPress={() => clearTypeSelection(loadPokemon)}
+                    onPress={() => clearSelection(loadPokemon)}
                   />
                 )}
                 <List.Section>
                   <List.Accordion
-                    title="Filter by Type"
+                    title="Filtrar por Tipo"
                     left={(props) => <List.Icon {...props} icon="shape" />}
                     multiple  
                     
@@ -160,17 +165,31 @@ export default function HomeScreen() {
                     ))}
                   </List.Accordion>
                   <List.Accordion
-                    title="Filter by Generation"
+                    title="Filtrar por Geração"
                     left={(props) => <List.Icon {...props} icon="history" />}
                   >
-                    <List.Item
-                      title="Gen 1"
-                      onPress={() => console.log("Gen 1")}
-                    />
-                    <List.Item
-                      title="Gen 2"
-                      onPress={() => console.log("Gen 2")}
-                    />
+                    {generations.map((generation) => (
+                      <List.Item
+                        title={generation.name}
+                        key={generation.name}
+                        onPress={() => toggleGenerationSelection(generation.name, setPokeList, loadPokemon)}
+                        left={(props) => (
+                          <List.Icon
+                            {...props}
+                            icon={
+                              selectedGenerations.includes(generation.name)
+                                ? "check-circle"
+                                : "checkbox-blank-circle-outline"
+                            }
+                            color={
+                              selectedGenerations.includes(generation.name)
+                                ? "#007aff"
+                                : undefined
+                            }
+                          />
+                        )}
+                      />
+                    ))}
                   </List.Accordion>
                 </List.Section>
               </View>
