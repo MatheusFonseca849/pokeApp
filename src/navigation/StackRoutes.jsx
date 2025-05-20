@@ -4,10 +4,12 @@ import HomeScreen from "../screens/HomeScreen";
 import FavoritesTabs from "../navigation/TabRoutes";
 import ItemsScreen from "../screens/ItemsScreen";
 import ItemDetailsScreen from "../screens/ItemDetailsScreen";
+import TeamsScreen from "../screens/TeamsScreen";
 
 const HomeStack = createStackNavigator();
 const FavoritesStack = createStackNavigator();
 const ItemsStack = createStackNavigator();
+const TeamsStack = createStackNavigator();
 
 export const HomeStackScreen = () => {
   return (
@@ -62,6 +64,18 @@ export const ItemsStackScreen = () => {
         options={{ headerShown: false }}
       />
     </ItemsStack.Navigator>
+  );
+};
+
+export const TeamsStackScreen = () => {
+  return (
+    <TeamsStack.Navigator>
+      <TeamsStack.Screen
+        name="TeamsScreen"
+        component={TeamsScreen}
+        options={{ headerShown: false }}
+      />
+    </TeamsStack.Navigator>
   );
 };
     
