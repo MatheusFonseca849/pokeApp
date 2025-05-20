@@ -5,12 +5,15 @@ import { ActivityIndicator, Card, IconButton } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import GestureRecognizer from "react-native-swipe-gestures";
+import { useContext } from "react";
+import { FavoritesContext } from "../providers/FavoritesContext";
 
 const ItemDetailsScreen = ({ route }) => {
     const [itemInfo, setItemInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation()
     const { id } = route.params;
+    const { favoriteItems, addItemToFavorites, removeItemFromFavorites } = useContext(FavoritesContext);
     console.log("Current Item ID:", id)
 
     const swipeConfig = {
@@ -76,10 +79,10 @@ const ItemDetailsScreen = ({ route }) => {
             />
             <Text style={styles.title}>{itemInfo.name}</Text>
             <IconButton
-            icon={"heart-outline"}
+            icon={favoriteItems.includes(itemInfo.id.toString()) ? "heart" : "heart-outline"}
             style={styles.favButton}
             onPress={() => {
-              favoriteArray.includes(itemInfo.id.toString()) ? removeFromFavorites(itemInfo.id.toString()) : addToFavorites(itemInfo.id.toString())
+              favoriteItems.includes(itemInfo.id.toString()) ? removeItemFromFavorites(itemInfo.id.toString()) : addItemToFavorites(itemInfo.id.toString())
             }}
             >
             </IconButton>
