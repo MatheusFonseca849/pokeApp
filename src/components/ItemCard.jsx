@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image } from "react-native";
 import { Card, IconButton } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 
-const ItemCard = ({ item, favoriteItems }) => {
+const ItemCard = ({ item, favoriteItems, addItemToFavorites, removeItemFromFavorites }) => {
 
   const navigation = useNavigation();
 
@@ -13,7 +13,7 @@ const ItemCard = ({ item, favoriteItems }) => {
   const itemUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${item.name}.png`;
 
   return (
-    <Card style={styles.card} onPress={() => navigation.navigate('ItemDetails', {item})}>
+    <Card style={styles.card} onPress={() => navigation.navigate('ItemDetails', {id: itemId})}>
       <Text style={styles.title}>{itemId}</Text>
       <View style={styles.cardContainer}>
         <View style={styles.itemContainer}>
@@ -24,6 +24,9 @@ const ItemCard = ({ item, favoriteItems }) => {
           <IconButton
             icon={favoriteItems.includes(itemId) ? "heart" : "heart-outline"}
             style={styles.favButton}
+            onPress={() => {
+              favoriteItems.includes(itemId) ? removeItemFromFavorites(itemId) : addItemToFavorites(itemId)
+            }}
            
           ></IconButton>
         </View>

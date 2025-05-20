@@ -1,49 +1,109 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 import axios from 'axios'
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Card } from "react-native-paper";
+import { ActivityIndicator, Card, IconButton } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import GestureRecognizer from "react-native-swipe-gestures";
 
 const ItemDetailsScreen = ({ route }) => {
     const [itemInfo, setItemInfo] = useState(null);
     const [loading, setLoading] = useState(true);
-    console.log(route)
-    const { item } = route.params;
-    console.log(item)
+    const navigation = useNavigation()
+    const { id } = route.params;
+    console.log("Current Item ID:", id)
 
-    useEffect(() => {
+    const swipeConfig = {
+        velocityThreshold: 0.3,
+        directionalOffsetThreshold: 120,
+        gestureIsClickThreshold: 5,
+      };
+
+      useEffect(() => {
         setLoading(true);
-        axios.get(item.url)
-            .then((response) => {
-                setItemInfo(response.data);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching item details:", error);
-                setLoading(false);
-            });
-    }, [item]);
+        // Fetch the item details using the `id`
+        axios.get(`https://pokeapi.co/api/v2/item/${id}`)
+          .then((response) => {
+            setItemInfo(response.data);
+            setLoading(false);
+          })
+          .catch((error) => {
+            console.error("Error fetching item details:", error);
+            setLoading(false);
+          });
+      }, [id]);
+
+    const goToPreviousItem = () => {
+        if (parseInt(id) > 1) {
+          // Navigate to the previous item
+          const previousId = (parseInt(id) - 1).toString();
+          // Update the route params without leaving the screen
+          navigation.setParams({ id: previousId });
+        }
+      };
+
+      const goToNextItem = () => {
+        // Navigate to the next item
+        const nextId = (parseInt(id) + 1).toString();
+        // Update the route params without leaving the screen
+        navigation.setParams({ id: nextId });
+      };
     
-    console.log(itemInfo)
-    console.log(item)
+    console.log("Item Info:", itemInfo)
 
     if (loading) {
         return (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#4264a8" />
-            <Text>Loading Pokémon details...</Text>
+            <Text>Loading item details...</Text>
           </View>
         );
       }  
 
     return (
-        <Card>
-            {itemInfo && (
-                <>
+      <SafeAreaView style={styles.container}>
+        <GestureRecognizer
+        onSwipeLeft={goToNextItem}
+        onSwipeRight={goToPreviousItem}
+        config={swipeConfig}
+        style={styles.flexContainer}
+        >
+        <Card style={styles.card}>
+          <View style={styles.headerContainer}> 
+            <IconButton
+              icon="arrow-left"
+              onPress={() => navigation.goBack()}
+            />
             <Text style={styles.title}>{itemInfo.name}</Text>
-            <Image source={{ uri: itemInfo.sprites.default }} style={styles.image} />
-                </>
-            )}
+            <IconButton
+            icon={"heart-outline"}
+            style={styles.favButton}
+            onPress={() => {
+              favoriteArray.includes(itemInfo.id.toString()) ? removeFromFavorites(itemInfo.id.toString()) : addToFavorites(itemInfo.id.toString())
+            }}
+            >
+            </IconButton>
+          </View>
+          <View style={styles.imageContainer}>
+              <Image source={{ uri: itemInfo.sprites.default }} style={styles.image} />
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.sectionTitle}>Description</Text>
+            <Text>{itemInfo.flavor_text_entries[0].text}</Text>
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.sectionTitle}>Attributes</Text>
+            {itemInfo.attributes.map((attribute) => (
+              <Text key={attribute.name}>{attribute.name}</Text>
+            ))}
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.sectionTitle}>Effects</Text>
+            <Text>{itemInfo.effect_entries[0].effect.replace("\n", "")}</Text>
+          </View>
         </Card>
+        </GestureRecognizer>
+      </SafeAreaView>
     );
 };
 
@@ -87,7 +147,7 @@ const styles = StyleSheet.create({
     height: 60,
   },
   infoContainer: {
-    gap: 12,
+    gap: 8,
   },
   sectionTitle: {
     fontSize: 18,
@@ -95,32 +155,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
   },
-  typesContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  type: {
-    color: "white",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 16,
-    textTransform: "capitalize",
-  },
-  statRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 2,
-  },
-  statName: {
-    textTransform: "capitalize",
-  },
-  statValue: {
-    fontWeight: "bold",
-  },
-  ability: {
-    textTransform: "capitalize",
-    marginLeft: 8,
-  },
+ 
   navigationButtons: {
     flexDirection: "row",
     justifyContent: "center",
