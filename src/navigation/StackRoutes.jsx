@@ -1,8 +1,9 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import PokemonDetailsScreen from "../screens/PokemonDetailsScreen";
 import HomeScreen from "../screens/HomeScreen";
-import FavoritesScreen from "../screens/FavoritesScreen";
+import FavoritesTabs from "../navigation/TabRoutes";
 import ItemsScreen from "../screens/ItemsScreen";
+import ItemDetailsScreen from "../screens/ItemDetailsScreen";
 
 const HomeStack = createStackNavigator();
 const FavoritesStack = createStackNavigator();
@@ -30,12 +31,17 @@ export const FavoritesStackScreen = () => {
     <FavoritesStack.Navigator>
       <FavoritesStack.Screen
         name="FavoritesScreen"
-        component={FavoritesScreen}
+        component={FavoritesTabs}  // Replace FavoritesScreen with FavoritesTabs
         options={{ headerShown: false }}
       />
       <FavoritesStack.Screen
         name="PokemonDetails"
         component={PokemonDetailsScreen}
+        options={{ headerShown: false }}
+      />
+      <FavoritesStack.Screen
+        name="ItemDetails"
+        component={ItemDetailsScreen}  // Add this to navigate to item details
         options={{ headerShown: false }}
       />
     </FavoritesStack.Navigator>
@@ -48,6 +54,11 @@ export const ItemsStackScreen = () => {
       <ItemsStack.Screen
         name="ItemsScreen"
         component={ItemsScreen}
+        options={{ headerShown: false }}
+      />
+      <ItemsStack.Screen
+        name="ItemDetails"
+        component={ItemDetailsScreen}
         options={{ headerShown: false }}
       />
     </ItemsStack.Navigator>

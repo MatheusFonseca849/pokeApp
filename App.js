@@ -7,11 +7,13 @@ import DrawerRoutes from "./src/navigation/DrawerRoutes";
 import PokemonProvider from "./src/providers/PokemonContext";
 import { theme } from "./src/themes/themes";
 import FilterProvider from "./src/providers/FilterContext";
+import { FavoritesProvider } from "./src/providers/FavoritesContext";
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <FilterProvider>
+        <FavoritesProvider>
         <PokemonProvider>
           <PaperProvider theme={theme}>
             <NavigationContainer>
@@ -19,6 +21,7 @@ export default function App() {
             </NavigationContainer>
           </PaperProvider>
         </PokemonProvider>
+        </FavoritesProvider>
       </FilterProvider>
     </GestureHandlerRootView>
   );
