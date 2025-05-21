@@ -1,8 +1,7 @@
-import { StyleSheet } from 'react-native'
 import React from 'react'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import { Ionicons } from "@expo/vector-icons";
-import { FavoritesStackScreen, HomeStackScreen, ItemsStackScreen } from './StackRoutes';
+import { FavoritesStackScreen, HomeStackScreen, ItemsStackScreen, TeamsStackScreen } from './StackRoutes';
 
 const Drawer = createDrawerNavigator()
 
@@ -39,8 +38,16 @@ export default function DrawerRoutes() {
           ),
         }}
       />
+      <Drawer.Screen
+      name='Teams'
+      component={TeamsStackScreen}
+      options={{
+          headerTitle: "Times",
+          drawerIcon: (color, size) => (
+            <Ionicons name="heart" color={"#4264a8"} size={size} />
+          ),
+        }}
+      />
     </Drawer.Navigator>
   )
 }
-
-const styles = StyleSheet.create({})
