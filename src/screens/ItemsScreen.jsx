@@ -8,9 +8,12 @@ import ItemCard from "../components/ItemCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useContext } from "react";
 import { FavoritesContext } from "../providers/FavoritesContext";
+import { Searchbar } from "react-native-paper";
 
 const ItemsScreen = () => {
   const [items, setItems] = useState([]);
+  const [itemsDatabase, setItemsDatabase] = useState([]);
+  const [searchItemText, setSearchItemText] = useState("");
   const [next, setNext] = useState("");
   const [previous, setPrevious] = useState("");
   const { favoriteItems, setFavoriteItems, loadFavoriteItems, addItemToFavorites, removeItemFromFavorites } = useContext(FavoritesContext);
@@ -21,8 +24,15 @@ const ItemsScreen = () => {
     gestureIsClickThreshold: 5,
   };
 
+  const loadAllItems = async () => {
+    const response = await fetch("https://pokeapi.co/api/v2/item?limit=100000&offset=0");
+    const data = await response.json();
+    setItemsDatabase(data.results);
+  };
+
   useEffect(() => {
     loadItems();
+    loadAllItems();
   }, []);
 
   const loadItems = async () => {
@@ -31,6 +41,15 @@ const ItemsScreen = () => {
     setItems(data.results);
     setNext(data.next);
     setPrevious(data.previous);
+  };
+
+  const searchItems = (searchItemText) => {
+    setSearchItemText(searchItemText);
+    const filteredItems = itemsDatabase.filter((item) => {
+      return item.name.includes(searchItemText.toLowerCase()) || item.url.slice(34, -1) === searchItemText
+    });
+    console.log(filteredItems)
+    setItems(filteredItems);
   };
 
   const handleNext = async () => {
@@ -70,6 +89,14 @@ const ItemsScreen = () => {
         style={styles.container}
         edges={["bottom", "left", "right"]}
       >
+        <View style={styles.searchContainer}>
+          <Searchbar
+            placeholder="Search Items"
+            onChangeText={searchItems}
+            value={searchItemText}
+            style={styles.searchBar}
+          />
+        </View>
         <FlatList
           style={styles.list}
           data={items}

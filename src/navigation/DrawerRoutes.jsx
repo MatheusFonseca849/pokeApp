@@ -1,4 +1,3 @@
-import { StyleSheet } from 'react-native'
 import React from 'react'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import { Ionicons } from "@expo/vector-icons";
@@ -52,5 +51,3 @@ export default function DrawerRoutes() {
     </Drawer.Navigator>
   )
 }
-
-const styles = StyleSheet.create({})
