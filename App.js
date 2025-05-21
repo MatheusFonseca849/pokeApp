@@ -5,24 +5,28 @@ import { NavigationContainer } from "@react-navigation/native";
 import { PaperProvider } from "react-native-paper";
 import DrawerRoutes from "./src/navigation/DrawerRoutes";
 import PokemonProvider from "./src/providers/PokemonContext";
-import { theme } from "./src/themes/themes";
 import FilterProvider from "./src/providers/FilterContext";
 import { FavoritesProvider } from "./src/providers/FavoritesContext";
+import { ThemeProvider } from "./src/providers/ThemeContext";
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <FilterProvider>
-        <FavoritesProvider>
-        <PokemonProvider>
+      <ThemeProvider>
+      {(theme) => (
           <PaperProvider theme={theme}>
-            <NavigationContainer>
-              <DrawerRoutes />
-            </NavigationContainer>
+            <FilterProvider>
+              <FavoritesProvider>
+                <PokemonProvider>
+                  <NavigationContainer>
+                    <DrawerRoutes />
+                  </NavigationContainer>
+                </PokemonProvider>
+              </FavoritesProvider>
+            </FilterProvider>
           </PaperProvider>
-        </PokemonProvider>
-        </FavoritesProvider>
-      </FilterProvider>
+        )}  
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }
