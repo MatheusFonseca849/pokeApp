@@ -5,7 +5,6 @@ import PaginationButton from "../components/PaginationButton";
 import GestureRecognizer from "react-native-swipe-gestures";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ItemCard from "../components/ItemCard";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useContext } from "react";
 import { FavoritesContext } from "../providers/FavoritesContext";
 import { Searchbar } from "react-native-paper";
@@ -16,14 +15,13 @@ const ItemsScreen = () => {
   const [searchItemText, setSearchItemText] = useState("");
   const [next, setNext] = useState("");
   const [previous, setPrevious] = useState("");
-  const { favoriteItems, setFavoriteItems, loadFavoriteItems, addItemToFavorites, removeItemFromFavorites } = useContext(FavoritesContext);
+  const { favoriteItemIds, loadFavoriteItems, addItemToFavorites, removeItemFromFavorites } = useContext(FavoritesContext);
 
   const swipeConfig = {
     velocityThreshold: 0.3,
     directionalOffsetThreshold: 120,
     gestureIsClickThreshold: 5,
   };
-
   const loadAllItems = async () => {
     const response = await fetch("https://pokeapi.co/api/v2/item?limit=100000&offset=0");
     const data = await response.json();
@@ -69,14 +67,10 @@ const ItemsScreen = () => {
   };
 
   useEffect(() => {
-    AsyncStorage.getItem('favoriteItems').then((favorites) => {
-        if (favorites) {
-            const favoritesList = JSON.parse(favorites)
-            setFavoriteItems(favoritesList)
-            loadFavoriteItems(favoritesList)
-        }
-    });
-}, []);
+    // No need to manually load favorites from AsyncStorage - the context will handle this
+    // Just call loadFavoriteItems once to populate the favoriteItems state
+    loadFavoriteItems();
+  }, [favoriteItemIds]);
 
   return (
     <GestureRecognizer
@@ -105,7 +99,7 @@ const ItemsScreen = () => {
             const id = item.url.split("/").filter(Boolean).pop();
           console.log(id)
           return (
-          <ItemCard item={item} id={id} favoriteItems={favoriteItems} addItemToFavorites={addItemToFavorites} removeItemFromFavorites={removeItemFromFavorites}/>        
+          <ItemCard item={item} id={id} favoriteItems={favoriteItemIds} addItemToFavorites={addItemToFavorites} removeItemFromFavorites={removeItemFromFavorites}/>        
         )
         }}
         />
