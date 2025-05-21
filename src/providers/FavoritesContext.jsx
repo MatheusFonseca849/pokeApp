@@ -1,22 +1,32 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
 export const FavoritesContext = createContext();
 
 export const FavoritesProvider = ({children}) => {
 
+    const [favoriteItemIds, setFavoriteItemIds] = useState([]);
     const [favoriteItems, setFavoriteItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const baseUrl = 'https://pokeapi.co/api/v2/';
+    
+    useEffect(() => {
+        AsyncStorage.getItem('favoriteItems').then((favorites) => {
+            if (favorites) {
+                const favoritesList = JSON.parse(favorites);
+                setFavoriteItemIds(favoritesList);
+            }
+        });
+    }, []);
 
-    const loadFavoriteItems = async (favoritesList) => {
+    const loadFavoriteItems = async () => {
         try {
             setLoading(true);
             // Use Promise.all to wait for all API requests to complete
-        const itemPromises = favoritesList.map(id => 
-          axios.get(`${baseUrl}item/${id}`)
-        );
+            const itemPromises = favoriteItemIds.map(id => 
+                axios.get(`${baseUrl}item/${id}`)
+            );
             
             const responses = await Promise.all(itemPromises);
             
@@ -40,7 +50,7 @@ export const FavoritesProvider = ({children}) => {
             const favoritesList = favorites ? JSON.parse(favorites) : [];
             favoritesList.push(id);
             await AsyncStorage.setItem('favoriteItems', JSON.stringify(favoritesList));
-            setFavoriteItems(favoritesList);
+            setFavoriteItemIds(favoritesList);
             console.log(`Added ${id} to favorites`);
             console.log(favoritesList)
         } catch (e) {
@@ -55,7 +65,7 @@ export const FavoritesProvider = ({children}) => {
             if(favoritesList.includes(id)){
                 const updatedList = favoritesList.filter((item) => item !== id);
                 await AsyncStorage.setItem('favoriteItems', JSON.stringify(updatedList));
-                setFavoriteItems(updatedList);
+                setFavoriteItemIds(updatedList);
                 console.log(`Removed ${id} from favorites`);
                 console.log(updatedList)
             }
@@ -67,6 +77,7 @@ export const FavoritesProvider = ({children}) => {
     return (
         <FavoritesContext.Provider value={{
             favoriteItems,
+            favoriteItemIds,
             loading,
             loadFavoriteItems,
             addItemToFavorites,

@@ -13,7 +13,7 @@ const ItemDetailsScreen = ({ route }) => {
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation()
     const { id } = route.params;
-    const { favoriteItems, addItemToFavorites, removeItemFromFavorites } = useContext(FavoritesContext);
+    const { favoriteItemIds, addItemToFavorites, removeItemFromFavorites } = useContext(FavoritesContext);
     console.log("Current Item ID:", id)
 
     const swipeConfig = {
@@ -79,10 +79,10 @@ const ItemDetailsScreen = ({ route }) => {
             />
             <Text style={styles.title}>{itemInfo.name}</Text>
             <IconButton
-            icon={favoriteItems.includes(itemInfo.id.toString()) ? "heart" : "heart-outline"}
+            icon={favoriteItemIds.includes(itemInfo.id.toString()) ? "heart" : "heart-outline"}
             style={styles.favButton}
             onPress={() => {
-              favoriteItems.includes(itemInfo.id.toString()) ? removeItemFromFavorites(itemInfo.id.toString()) : addItemToFavorites(itemInfo.id.toString())
+              favoriteItemIds.includes(itemInfo.id.toString()) ? removeItemFromFavorites(itemInfo.id.toString()) : addItemToFavorites(itemInfo.id.toString())
             }}
             >
             </IconButton>

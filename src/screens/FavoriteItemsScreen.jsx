@@ -1,83 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import ItemCard from '../components/ItemCard';
+import { FavoritesContext } from '../providers/FavoritesContext';
 
 const FavoriteItemsScreen = () => {
-  const [favoriteItems, setFavoriteItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [favorites, setFavorites] = useState([]);
-  const baseUrl = 'https://pokeapi.co/api/v2/';
+  const { 
+    favoriteItems, 
+    favoriteItemIds, 
+    loading, 
+    loadFavoriteItems, 
+    addItemToFavorites, 
+    removeItemFromFavorites 
+  } = useContext(FavoritesContext);
 
   useEffect(() => {
-    loadFavorites();
-  }, []);
+    loadFavoriteItems();
+  }, [favoriteItemIds]);
 
-  const loadFavorites = async () => {
-    try {
-      const storedFavorites = await AsyncStorage.getItem('favoriteItems');
-      if (storedFavorites) {
-        const favoritesList = JSON.parse(storedFavorites);
-        setFavorites(favoritesList);
-        loadFavoriteItems(favoritesList);
-      } else {
-        setLoading(false);
-      }
-    } catch (e) {
-      console.error(e);
-      setLoading(false);
-    }
-  };
 
-  const loadFavoriteItems = async (favoritesList) => {
-    try {
-      setLoading(true);
-      // Use Promise.all to wait for all API requests to complete
-      const itemPromises = favoritesList.map(id => 
-        axios.get(`${baseUrl}item/${id}`)
-      );
-      
-      const responses = await Promise.all(itemPromises);
-      
-      // Transform the response data into the format ItemCard expects
-      const itemData = responses.map(response => ({
-        name: response.data.name,
-        url: `https://pokeapi.co/api/v2/item/${response.data.id}/`
-      }));
-      
-      setFavoriteItems(itemData);
-    } catch (error) {
-      console.error('Error loading favorite items:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const addItemToFavorites = async (id) => {
-    try {
-      const favoritesList = [...favorites];
-      favoritesList.push(id);
-      await AsyncStorage.setItem('favoriteItems', JSON.stringify(favoritesList));
-      setFavorites(favoritesList);
-      loadFavoriteItems(favoritesList);
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
-  const removeItemFromFavorites = async (id) => {
-    try {
-      const updatedList = favorites.filter(item => item !== id);
-      await AsyncStorage.setItem('favoriteItems', JSON.stringify(updatedList));
-      setFavorites(updatedList);
-      loadFavoriteItems(updatedList);
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
   if (loading) {
     return (
@@ -101,7 +45,7 @@ const FavoriteItemsScreen = () => {
               <ItemCard 
                 item={item} 
                 id={id} 
-                favoriteItems={favorites}
+                favoriteItems={favoriteItemIds}
                 addItemToFavorites={addItemToFavorites}
                 removeItemFromFavorites={removeItemFromFavorites}
               />        
