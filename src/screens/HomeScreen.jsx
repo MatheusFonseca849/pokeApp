@@ -8,8 +8,10 @@ import PaginationButton from "../components/PaginationButton";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FilterContext } from "../providers/FilterContext";
+import { ThemeContext } from "../providers/ThemeContext";
 
 export default function HomeScreen() {
+  const { theme } = useContext(ThemeContext);
   const [contentHeight, setContentHeight] = useState(0);
 
   const [filtersVisible, setFiltersVisible] = useState(false);
@@ -91,16 +93,16 @@ export default function HomeScreen() {
 
   return (
     <GestureRecognizer
-      style={styles.container}
+      style={[styles.container, {backgroundColor: theme.colors.background}]}
       onSwipeLeft={onSwipeLeft}
       onSwipeRight={onSwipeRight}
       config={swipeConfig}
     >
       <SafeAreaView
-        style={styles.container}
+        style={[styles.container, {backgroundColor: theme.colors.background}]}
         edges={["bottom", "left", "right"]}
       >
-        <View style={styles.searchContainer}>
+        <View style={[styles.searchContainer, {backgroundColor: theme.colors.surface}]}>
           <Searchbar
             placeholder="Search Pokemon"
             onChangeText={searchPokemon}
@@ -238,7 +240,6 @@ const styles = StyleSheet.create({
   animatedContainer: {
     overflow: "hidden",
     paddingHorizontal: 12,
-    backgroundColor: "#fff", // optional, match your theme
   },
 
   searchBar: {

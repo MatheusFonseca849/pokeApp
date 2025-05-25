@@ -8,8 +8,10 @@ import ItemCard from "../components/ItemCard";
 import { useContext } from "react";
 import { FavoritesContext } from "../providers/FavoritesContext";
 import { Searchbar } from "react-native-paper";
+import { ThemeContext } from "../providers/ThemeContext";
 
 const ItemsScreen = () => {
+  const { theme } = useContext(ThemeContext);
   const [items, setItems] = useState([]);
   const [itemsDatabase, setItemsDatabase] = useState([]);
   const [searchItemText, setSearchItemText] = useState("");
@@ -77,13 +79,13 @@ const ItemsScreen = () => {
       onSwipeLeft={handleNext}
       onSwipeRight={handlePrevious}
       config={swipeConfig}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <SafeAreaView
-        style={styles.container}
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
         edges={["bottom", "left", "right"]}
       >
-        <View style={styles.searchContainer}>
+        <View style={[styles.searchContainer, { backgroundColor: theme.colors.surface }]}>
           <Searchbar
             placeholder="Search Items"
             onChangeText={searchItems}
@@ -99,7 +101,14 @@ const ItemsScreen = () => {
             const id = item.url.split("/").filter(Boolean).pop();
           console.log(id)
           return (
-          <ItemCard item={item} id={id} favoriteItems={favoriteItemIds} addItemToFavorites={addItemToFavorites} removeItemFromFavorites={removeItemFromFavorites}/>        
+          <ItemCard 
+            item={item} 
+            id={id} 
+            favoriteItems={favoriteItemIds} 
+            addItemToFavorites={addItemToFavorites} 
+            removeItemFromFavorites={removeItemFromFavorites}
+            theme={theme}
+          />        
         )
         }}
         />

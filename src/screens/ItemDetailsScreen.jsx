@@ -7,8 +7,10 @@ import { useNavigation } from "@react-navigation/native";
 import GestureRecognizer from "react-native-swipe-gestures";
 import { useContext } from "react";
 import { FavoritesContext } from "../providers/FavoritesContext";
+import { ThemeContext } from "../providers/ThemeContext";
 
 const ItemDetailsScreen = ({ route }) => {
+    const { theme } = useContext(ThemeContext);
     const [itemInfo, setItemInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation()
@@ -56,28 +58,28 @@ const ItemDetailsScreen = ({ route }) => {
 
     if (loading) {
         return (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#4264a8" />
-            <Text>Loading item details...</Text>
+          <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={{ color: theme.colors.onBackground }}>Loading item details...</Text>
           </View>
         );
       }  
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <GestureRecognizer
         onSwipeLeft={goToNextItem}
         onSwipeRight={goToPreviousItem}
         config={swipeConfig}
-        style={styles.flexContainer}
+        style={[styles.flexContainer, { backgroundColor: theme.colors.background }]}
         >
-        <Card style={styles.card}>
+        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
           <View style={styles.headerContainer}> 
             <IconButton
               icon="arrow-left"
               onPress={() => navigation.goBack()}
             />
-            <Text style={styles.title}>{itemInfo.name}</Text>
+            <Text style={[styles.title, { color: theme.colors.onSurface }]}>{itemInfo.name}</Text>
             <IconButton
             icon={favoriteItemIds.includes(itemInfo.id.toString()) ? "heart" : "heart-outline"}
             style={styles.favButton}
@@ -91,18 +93,18 @@ const ItemDetailsScreen = ({ route }) => {
               <Image source={{ uri: itemInfo.sprites.default }} style={styles.image} />
           </View>
           <View style={styles.infoContainer}>
-            <Text style={styles.sectionTitle}>Description</Text>
-            <Text>{itemInfo.flavor_text_entries[0].text}</Text>
+            <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>Description</Text>
+            <Text style={{ color: theme.colors.onSurface }}>{itemInfo.flavor_text_entries[0].text}</Text>
           </View>
           <View style={styles.infoContainer}>
-            <Text style={styles.sectionTitle}>Attributes</Text>
+            <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>Attributes</Text>
             {itemInfo.attributes.map((attribute) => (
-              <Text key={attribute.name}>{attribute.name}</Text>
+              <Text key={attribute.name} style={{ color: theme.colors.onSurface }}>{attribute.name}</Text>
             ))}
           </View>
           <View style={styles.infoContainer}>
-            <Text style={styles.sectionTitle}>Effects</Text>
-            <Text>{itemInfo.effect_entries[0].effect.replace("\n", "")}</Text>
+            <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>Effects</Text>
+            <Text style={{ color: theme.colors.onSurface }}>{itemInfo.effect_entries[0].effect.replace("\n", "")}</Text>
           </View>
         </Card>
         </GestureRecognizer>
