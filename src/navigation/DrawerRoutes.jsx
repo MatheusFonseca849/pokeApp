@@ -11,7 +11,19 @@ const Drawer = createDrawerNavigator()
 export default function DrawerRoutes() {
   const { theme } = useContext(ThemeContext);
   return (
-    <Drawer.Navigator>
+    <Drawer.Navigator
+    screenOptions={{
+      headerStyle: {
+        backgroundColor: theme.colors.surface,
+      },
+      headerTintColor: theme.colors.onSurface,
+      drawerStyle: {
+        backgroundColor: theme.colors.background,
+      },
+      drawerActiveTintColor: theme.colors.primary,
+      drawerInactiveTintColor: theme.colors.onSurface,
+    }}
+    >
       <Drawer.Screen
     name="Home"
     component={HomeStackScreen}

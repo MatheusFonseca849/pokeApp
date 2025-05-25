@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image } from "react-native";
 import { Card, IconButton } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 
-const ItemCard = ({ item, favoriteItems, addItemToFavorites, removeItemFromFavorites }) => {
+const ItemCard = ({ item, favoriteItems, addItemToFavorites, removeItemFromFavorites, theme }) => {
 
   const navigation = useNavigation();
 
@@ -13,12 +13,12 @@ const ItemCard = ({ item, favoriteItems, addItemToFavorites, removeItemFromFavor
   const itemUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${item.name}.png`;
 
   return (
-    <Card style={styles.card} onPress={() => navigation.navigate('ItemDetails', {id: itemId})}>
-      <Text style={styles.title}>{itemId}</Text>
+    <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} onPress={() => navigation.navigate('ItemDetails', {id: itemId})}>
+      <Text style={[styles.title, { color: theme.colors.onSurface }]}>{itemId}</Text>
       <View style={styles.cardContainer}>
         <View style={styles.itemContainer}>
           <Image source={{ uri: itemUrl }} style={{ width: 64, height: 64 }} />
-          <Text>{item.name}</Text>
+          <Text style={{ color: theme.colors.onSurface }}>{item.name}</Text>
         </View>
         <View style={styles.buttonContainer}>
           <IconButton

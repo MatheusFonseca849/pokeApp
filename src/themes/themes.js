@@ -37,6 +37,7 @@ export const lightTheme = {
     ...common.colors,
   },
   spacing: common.spacing,
+  fonts: MD3LightTheme.fonts,
 };
 
 export const darkTheme = {
@@ -46,4 +47,5 @@ export const darkTheme = {
     ...common.colors,
   },
   spacing: common.spacing,
+  fonts: MD3DarkTheme.fonts,
 };
