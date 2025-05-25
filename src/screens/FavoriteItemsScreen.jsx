@@ -4,6 +4,7 @@ import { ActivityIndicator, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ItemCard from '../components/ItemCard';
 import { FavoritesContext } from '../providers/FavoritesContext';
+import { ThemeContext } from '../providers/ThemeContext';
 
 const FavoriteItemsScreen = () => {
   const { 
@@ -19,24 +20,22 @@ const FavoriteItemsScreen = () => {
     loadFavoriteItems();
   }, [favoriteItemIds]);
 
-
-
-
+  const { theme } = useContext(ThemeContext);
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4264a8" />
-        <Text>Loading favorite items...</Text>
+      <View style={[styles.loadingContainer, {backgroundColor: theme.colors.background}]}>
+        <ActivityIndicator size="large" color={theme.colors.primary}/>
+        <Text style={[styles.title, { color: theme.colors.onSurface }]}>Loading favorite items...</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, {backgroundColor: theme.colors.background}]}>
       {favoriteItems.length > 0 ? (
         <FlatList
-          style={styles.list}
+          style={[styles.list, {backgroundColor: theme.colors.background}]}
           data={favoriteItems}
           keyExtractor={(item) => item.name}
           renderItem={({ item }) => {
@@ -48,13 +47,14 @@ const FavoriteItemsScreen = () => {
                 favoriteItems={favoriteItemIds}
                 addItemToFavorites={addItemToFavorites}
                 removeItemFromFavorites={removeItemFromFavorites}
+                theme={theme}
               />        
             );
           }}
         />
       ) : (
-        <View style={styles.emptyContainer}>
-          <Text>You don't have any favorite items yet.</Text>
+        <View style={[styles.emptyContainer, {backgroundColor: theme.colors.background}]}>
+          <Text style={[styles.title, { color: theme.colors.onSurface }]}>You don't have any favorite items yet.</Text>
         </View>
       )}
     </SafeAreaView>
