@@ -9,6 +9,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FilterContext } from "../providers/FilterContext";
 import { ThemeContext } from "../providers/ThemeContext";
+import { TeamsContext } from "../providers/TeamsContext";
+import AddToTeamModal from "../components/AddToTeamModal";
 
 export default function HomeScreen() {
   const { theme } = useContext(ThemeContext);
@@ -44,6 +46,8 @@ export default function HomeScreen() {
     onSwipeRight,
     swipeConfig,
   } = useContext(PokemonContext);
+
+  
 
   const animatedHeight = useRef(new Animated.Value(0)).current;
 

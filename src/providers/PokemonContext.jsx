@@ -21,7 +21,7 @@ export const PokemonProvider = ({ children }) => {
     const baseUrl = "https://pokeapi.co/api/v2/";
 
     useEffect(() => {
-        AsyncStorage.getItem('favorites').then((favorites) => {
+        AsyncStorage.getItem('@favorites').then((favorites) => {
             if (favorites) {
                 const favoritesList = JSON.parse(favorites);
                 setFavoriteArray(favoritesList);
@@ -129,10 +129,10 @@ export const PokemonProvider = ({ children }) => {
     const addToFavorites = async (id) => {
         console.log(id)
             try {
-                const favorites = await AsyncStorage.getItem('favorites');
+                const favorites = await AsyncStorage.getItem('@favorites');
                 const favoritesList = favorites ? JSON.parse(favorites) : [];
                 favoritesList.push(id);
-                await AsyncStorage.setItem('favorites', JSON.stringify(favoritesList));
+                await AsyncStorage.setItem('@favorites', JSON.stringify(favoritesList));
                 // Update the state to trigger re-rendering
                 setFavoriteArray(favoritesList);
                 console.log(`Added ${id} to favorites`);
@@ -144,11 +144,11 @@ export const PokemonProvider = ({ children }) => {
 
     const removeFromFavorites = async (id) => {
         try {
-            const favorites = await AsyncStorage.getItem('favorites');
+            const favorites = await AsyncStorage.getItem('@favorites');
             const favoritesList = favorites ? JSON.parse(favorites) : [];
             if(favoritesList.includes(id)){
                 const updatedList = favoritesList.filter((pokemon) => pokemon !== id);
-                await AsyncStorage.setItem('favorites', JSON.stringify(updatedList));
+                await AsyncStorage.setItem('@favorites', JSON.stringify(updatedList));
                 setFavoriteArray(updatedList);
                 console.log(`Removed ${id} from favorites`);
                 console.log(updatedList)

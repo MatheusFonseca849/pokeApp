@@ -3,17 +3,29 @@ import { Card, IconButton, Text } from "react-native-paper";
 import { Image } from "react-native";
 import { useContext } from "react";
 import { PokemonContext } from "../providers/PokemonContext";
+import { TeamsContext } from "../providers/TeamsContext";
 import { useNavigation } from "@react-navigation/native";
+import AddToTeamModal from "./AddToTeamModal";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const PokeCard = ({item}) => {
 
     const navigation = useNavigation();
 
     const {addToFavorites, removeFromFavorites, favoriteArray} = useContext(PokemonContext);
+    const [teamModalVisible, setTeamModalVisible] = useState(false);
+    const {teams, addPokemonToTeam, loadTeams} = useContext(TeamsContext);
 
     const pokeId = item.url.slice(34, -1);
     const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokeId}.png`;
+    
+    useEffect(() => {
+      loadTeams();
+    }, []);
+    
     return(
+      <>
         <Card style={styles.card} onPress={() => navigation.navigate('PokemonDetails', {id: pokeId})}>
         <Text style={styles.title}>{pokeId}</Text>
         <View style={styles.cardContainer}>
@@ -36,9 +48,17 @@ const PokeCard = ({item}) => {
             }}
             >
             </IconButton>
+            <IconButton
+            icon="plus"
+            style={styles.favButton}
+            onPress={() => setTeamModalVisible(true)}
+            >
+            </IconButton>
         </View>
         </View>
       </Card>
+      <AddToTeamModal visible={teamModalVisible} onDismiss={() => setTeamModalVisible(false)} pokemon={item} />
+      </>
     )
 }
 
@@ -56,6 +76,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     gap: 12,
+  },
+
+  buttonContainer:{
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
   },
 
   cardContainer: {

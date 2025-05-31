@@ -1,20 +1,26 @@
-import { View, Text } from "react-native";
+import { Text } from "react-native";
 import { ThemeContext } from "../providers/ThemeContext";
 import { useContext } from "react";
-import { Card, IconButton, Title } from "react-native-paper";
+import { Card, IconButton } from "react-native-paper";
 import { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
-import GestureRecognizer from "react-native-swipe-gestures";
+import GestureRecognizer from "react-native-swipe-gestures";  
 import TeamModal from "../components/TeamModal";
 import { FAB } from 'react-native-paper';
+import { TeamsContext } from "../providers/TeamsContext";
+import { FlatList } from "react-native";
+import TeamCard from "../components/TeamCard";
+import { useNavigation } from "@react-navigation/native";
 
 const TeamsScreen = () => {
   const [loading, setLoading] = useState(false);
-  const [teams, setTeams] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const { loadTeams, teams, createTeam } = useContext(TeamsContext);
+
+  const navigation = useNavigation();
+console.log(teams)
   const swipeConfig = {
     velocityThreshold: 0.3,
     directionalOffsetThreshold: 120,
@@ -43,42 +49,9 @@ const TeamsScreen = () => {
     */
 
   useEffect(() => {
-    AsyncStorage.getItem("@teams").then((teams) => {
-      if (teams) {
-        const teamsList = JSON.parse(teams);
-        setTeams(teamsList);
-      }
-    });
+    loadTeams();
   }, []);
 
-  const loadTeams = async () => {
-    try {
-      setLoading(true);
-      const teams = await AsyncStorage.getItem("teams");
-      const teamsList = teams ? JSON.parse(teams) : [];
-      setTeams(teamsList);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error loading teams:", error);
-      setLoading(false);
-    }
-  };
-
-  const createTeam = async (team) => {
-    console.log('Creating Team')
-    try {
-        setLoading(true);
-        const teams = await AsyncStorage.getItem('teams');
-        const teamsList = teams ? JSON.parse(teams) : [];
-        teamsList.push(team);
-        await AsyncStorage.setItem('teams', JSON.stringify(teamsList));
-        setTeams(teamsList);
-        setLoading(false);
-    } catch (error) {
-        console.error('Error creating team:', error);
-        setLoading(false);
-    }
-  };
   const { theme } = useContext(ThemeContext);
   return (
     <GestureRecognizer
@@ -96,8 +69,14 @@ const TeamsScreen = () => {
       >
         <Card style={{ backgroundColor: theme.colors.background }}>
           <Text style={{ color: theme.colors.onSurface }}>Times</Text>
-          <IconButton icon="plus" onPress={() => {createTeam()}} />
         </Card>
+        <FlatList
+          data={teams}
+          renderItem={({ item }) => (
+            <TeamCard key={item.id} team={item} onPress={() => navigation.navigate('TeamDetails', {team: item})}/>
+          )}
+          keyExtractor={(item) => item.id}
+        />
         <FAB
           icon="plus"
           style={{

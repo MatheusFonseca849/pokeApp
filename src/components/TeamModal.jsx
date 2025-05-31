@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
 import { Dialog, Portal, TextInput, Button } from "react-native-paper";
 import WheelColorPicker from "react-native-wheel-color-picker";
+import { useContext } from "react";
+import { TeamsContext } from "../providers/TeamsContext";
 
 const TeamModal = ({ visible, onDismiss, onSubmit }) => {
-  const [teamName, setTeamName] = useState("");
-  const [color, setColor] = useState("#000000");
-  const [backgroundColor, setBackgroundColor] = useState("#cccccc");
   const [pickerTarget, setPickerTarget] = useState(null);
+
+  const { teamName, color, backgroundColor, setTeamName, setColor, setBackgroundColor } = useContext(TeamsContext);
 
   const handleSave = () => {
     if (!teamName) return;
@@ -19,7 +20,6 @@ const TeamModal = ({ visible, onDismiss, onSubmit }) => {
       backgroundColor,
       pokemon: [],
     };
-
     onSubmit(newTeam);
     resetForm();
   };
@@ -74,7 +74,7 @@ const TeamModal = ({ visible, onDismiss, onSubmit }) => {
 
           {/* Color Picker (Conditional) */}
           {pickerTarget && (
-            <View style={{ height: 200, marginTop: 12 }}>
+            <View style={{ height: 200, marginTop: 12, marginBottom: 58 }}>
               <WheelColorPicker
                 color={pickerTarget === "color" ? color : backgroundColor}
                 onColorChangeComplete={handleColorSelect}
@@ -84,7 +84,14 @@ const TeamModal = ({ visible, onDismiss, onSubmit }) => {
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={resetForm}>Cancelar</Button>
-          <Button onPress={handleSave} variant="contained">Salvar</Button>
+          <Button onPress={() => {
+            if(!teamName){
+              alert("Por favor, insira um nome para o time.");
+              return;
+            }
+            handleSave()
+            resetForm()
+            }}>Salvar</Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
