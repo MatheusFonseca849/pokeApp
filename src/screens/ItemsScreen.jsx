@@ -69,8 +69,6 @@ const ItemsScreen = () => {
   };
 
   useEffect(() => {
-    // No need to manually load favorites from AsyncStorage - the context will handle this
-    // Just call loadFavoriteItems once to populate the favoriteItems state
     loadFavoriteItems();
   }, [favoriteItemIds]);
 
@@ -129,7 +127,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     display: "flex",
     flexDirection: "row",
-    gap: 8,
     justifyContent: "center",
   },
   container: {
