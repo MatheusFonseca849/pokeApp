@@ -2,6 +2,7 @@ import GestureRecognizer from "react-native-swipe-gestures";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, StyleSheet, ScrollView, Image } from "react-native";
 import { TeamsContext } from "../providers/TeamsContext";
+import { RadarChart } from "@salmonco/react-native-radar-chart";
 
 import {
   Text,
@@ -174,12 +175,46 @@ const PokemonDetailsScreen = ({ route }) => {
               </View>
 
               <Text style={styles.sectionTitle}>Stats</Text>
-              {pokemon?.stats.map((stat) => (
-                <View key={stat.stat.name} style={styles.statRow}>
-                  <Text style={styles.statName}>{stat.stat.name}:</Text>
-                  <Text style={styles.statValue}>{stat.base_stat}</Text>
+              <View style={styles.statsContainer}>
+                <View>
+                  {pokemon?.stats.map((stat) => (
+                    <View key={stat.stat.name} style={styles.statRow}>
+                      <Text style={styles.statName}>{stat.stat.name}:</Text>
+                      <Text style={styles.statValue}>{stat.base_stat}</Text>
+                    </View>
+                  ))}
                 </View>
-              ))}
+                <View>
+                  <RadarChart
+                    data={pokemon?.stats.map((stat) => {
+                      const statName =
+                        stat.stat.name.charAt(0).toUpperCase() +
+                        stat.stat.name.slice(1);
+                      const statValue = stat.base_stat;
+                      return {
+                        label: statName,
+                        value: statValue,
+                      };
+                    })}
+                    stroke={[
+                      "#006176",
+                      "#006176",
+                      "#006176",
+                      "#006176",
+                      "#000000",
+                    ]}
+                    strokeWidth={[0.5, 0.5, 0.5, 0.5, 1]}
+                    strokeOpacity={[1, 1, 1, 1, 1]}
+                    gradientColor={{
+                      startColor: "#ffffff",
+                      endColor: "#ffffff",
+                      count: 5,
+                    }}
+                    dataFillColor="#23c55e50"
+                    size={200}
+                  />
+                </View>
+              </View>
 
               <Text style={styles.sectionTitle}>Abilities</Text>
               {pokemon?.abilities.map((ability) => (
@@ -281,6 +316,11 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 16,
     textTransform: "capitalize",
+  },
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   statRow: {
     flexDirection: "row",
