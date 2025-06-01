@@ -81,9 +81,7 @@ console.log(teams)
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
-        <Card style={{ backgroundColor: theme.colors.background }}>
-          <Text style={{ color: theme.colors.onSurface }}>Times</Text>
-        </Card>
+
         <FlatList
           data={teams}
           renderItem={({ item }) => (
