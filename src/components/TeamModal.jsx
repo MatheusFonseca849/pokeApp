@@ -1,33 +1,59 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Dialog, Portal, TextInput, Button } from "react-native-paper";
 import WheelColorPicker from "react-native-wheel-color-picker";
-import { useContext } from "react";
 import { TeamsContext } from "../providers/TeamsContext";
 
-const TeamModal = ({ visible, onDismiss, onSubmit }) => {
+const TeamModal = ({ visible, onDismiss, onSubmit, teamToEdit }) => {
   const [pickerTarget, setPickerTarget] = useState(null);
 
   const { teamName, color, backgroundColor, setTeamName, setColor, setBackgroundColor } = useContext(TeamsContext);
-
+  
+  // Effect to set form data when teamToEdit changes
+  useEffect(() => {
+    if (teamToEdit) {
+      // When editing a team, load its values
+      setTeamName(teamToEdit.name);
+      setColor(teamToEdit.color);
+      setBackgroundColor(teamToEdit.backgroundColor);
+    } else {
+      // When creating a new team, reset to defaults
+      setTeamName("");
+      setColor("#000000");
+      setBackgroundColor("#cccccc");
+    }
+  }, [teamToEdit, visible]); // Re-run when modal becomes visible
+  
   const handleSave = () => {
     if (!teamName) return;
-
-    const newTeam = {
-      id: Date.now().toString(),
+    
+    const teamData = {
       name: teamName,
       color,
       backgroundColor,
-      pokemon: [],
     };
-    onSubmit(newTeam);
+    
+    if (teamToEdit) {
+      // If editing, preserve id and pokemon
+      teamData.id = teamToEdit.id;
+      teamData.pokemon = teamToEdit.pokemon;
+    } else {
+      // If creating new, generate a new ID
+      teamData.id = Date.now().toString();
+      teamData.pokemon = [];
+    }
+    
+    onSubmit(teamData, !!teamToEdit); // Pass data and whether it's an edit
     resetForm();
   };
-
+  
   const resetForm = () => {
-    setTeamName("");
-    setColor("#000000");
-    setBackgroundColor("#cccccc");
+    // Only reset form if not editing or after closing modal
+    if (!teamToEdit) {
+      setTeamName("");
+      setColor("#000000");
+      setBackgroundColor("#cccccc");
+    }
     setPickerTarget(null);
     onDismiss();
   };
@@ -40,7 +66,7 @@ const TeamModal = ({ visible, onDismiss, onSubmit }) => {
   return (
     <Portal>
       <Dialog visible={visible} onDismiss={resetForm}>
-        <Dialog.Title>Criar novo time</Dialog.Title>
+        <Dialog.Title>{teamToEdit ? "Editar time" : "Criar novo time"}</Dialog.Title>
         <Dialog.Content>
           <TextInput
             label="Nome do time"

@@ -81,6 +81,11 @@ export const TeamsStackScreen = () => {
         component={TeamDetailsScreen}
         options={{ headerShown: false }}
       />
+      <TeamsStack.Screen
+        name="PokemonDetails"
+        component={PokemonDetailsScreen}
+        options={{ headerShown: false }}
+      />
     </TeamsStack.Navigator>
   );
 };

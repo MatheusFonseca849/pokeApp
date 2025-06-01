@@ -16,8 +16,9 @@ import { useNavigation } from "@react-navigation/native";
 const TeamsScreen = () => {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [teamToEdit, setTeamToEdit] = useState(null);
 
-  const { loadTeams, teams, createTeam } = useContext(TeamsContext);
+  const { loadTeams, teams, createTeam, updateTeam } = useContext(TeamsContext);
 
   const navigation = useNavigation();
 console.log(teams)
@@ -27,6 +28,19 @@ console.log(teams)
     gestureIsClickThreshold: 5,
   };
 
+  const editTeam = (team) => {
+    setTeamToEdit(team);
+    setModalVisible(true);
+  };
+
+  const handleTeamSubmit = (teamData, isEdit) => {
+    if (isEdit) {
+      updateTeam(teamData);
+    } else {
+      createTeam(teamData);
+    }
+    setTeamToEdit(null);  // Clear the edit state after submission
+  };
   /* 
     Team Object sample
 
@@ -73,7 +87,7 @@ console.log(teams)
         <FlatList
           data={teams}
           renderItem={({ item }) => (
-            <TeamCard key={item.id} team={item} onPress={() => navigation.navigate('TeamDetails', {team: item})}/>
+            <TeamCard key={item.id} team={item} onEdit={() => editTeam(item)} onPress={() => navigation.navigate('TeamDetails', {teamId: item.id})}/>
           )}
           keyExtractor={(item) => item.id}
         />
@@ -85,12 +99,20 @@ console.log(teams)
             bottom: 52,
             backgroundColor: theme.colors.primary,
           }}
-          onPress={() => setModalVisible(true)}
+          onPress={() =>{
+            setModalVisible(true)
+            setTeamToEdit(null)
+
+          }}
         />
         <TeamModal
           visible={modalVisible}
-          onDismiss={() => setModalVisible(false)}
-          onSubmit={createTeam}
+          onDismiss={() => {
+            setModalVisible(false)
+            setTeamToEdit(null)
+          }}
+          onSubmit={handleTeamSubmit}
+          teamToEdit={teamToEdit}
         />
       </SafeAreaView>
     </GestureRecognizer>

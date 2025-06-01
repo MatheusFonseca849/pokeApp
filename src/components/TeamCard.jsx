@@ -1,12 +1,16 @@
 import { FlatList, Image } from "react-native";
-import { Card } from "react-native-paper";
+import { Card, IconButton } from "react-native-paper";
+import { useContext } from "react";
+import { TeamsContext } from "../providers/TeamsContext";
 
-const TeamCard = ({team, onPress}) => {
+const TeamCard = ({team, onPress, onEdit}) => {
+
+    const {removeTeam} = useContext(TeamsContext);
 
     return (
         <Card style={{ borderWidth: 3, borderLeftWidth: 32, borderColor: team.color, marginBottom: 8 }} onPress={onPress}>
             <Card.Title title={team.name} />
-            <Card.Content>
+            <Card.Content style={{flex: 1, flexDirection: 'row'}}>
                 <FlatList
                     style={{flex: 1, flexDirection: 'row'}}
                     
@@ -24,6 +28,10 @@ const TeamCard = ({team, onPress}) => {
                     }}
                     keyExtractor={(item) => item.id}
                 />
+            <Card.Actions>
+                <IconButton icon="delete" onPress={() => removeTeam(team.id)} />
+                <IconButton icon="pencil" onPress={() => onEdit(team)} />
+            </Card.Actions>
             </Card.Content>
         </Card>
     );
