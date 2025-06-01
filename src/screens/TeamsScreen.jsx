@@ -5,9 +5,9 @@ import { Card, IconButton } from "react-native-paper";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
-import GestureRecognizer from "react-native-swipe-gestures";  
+import GestureRecognizer from "react-native-swipe-gestures";
 import TeamModal from "../components/TeamModal";
-import { FAB } from 'react-native-paper';
+import { FAB } from "react-native-paper";
 import { TeamsContext } from "../providers/TeamsContext";
 import { FlatList } from "react-native";
 import TeamCard from "../components/TeamCard";
@@ -21,7 +21,7 @@ const TeamsScreen = () => {
   const { loadTeams, teams, createTeam, updateTeam } = useContext(TeamsContext);
 
   const navigation = useNavigation();
-console.log(teams)
+  console.log(teams);
   const swipeConfig = {
     velocityThreshold: 0.3,
     directionalOffsetThreshold: 120,
@@ -39,7 +39,7 @@ console.log(teams)
     } else {
       createTeam(teamData);
     }
-    setTeamToEdit(null);  // Clear the edit state after submission
+    setTeamToEdit(null); // Clear the edit state after submission
   };
   /* 
     Team Object sample
@@ -81,35 +81,38 @@ console.log(teams)
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
-        <Card style={{ backgroundColor: theme.colors.background }}>
-          <Text style={{ color: theme.colors.onSurface }}>Times</Text>
-        </Card>
         <FlatList
           data={teams}
           renderItem={({ item }) => (
-            <TeamCard key={item.id} team={item} onEdit={() => editTeam(item)} onPress={() => navigation.navigate('TeamDetails', {teamId: item.id})}/>
+            <TeamCard
+              key={item.id}
+              team={item}
+              onEdit={() => editTeam(item)}
+              onPress={() =>
+                navigation.navigate("TeamDetails", { teamId: item.id })
+              }
+            />
           )}
           keyExtractor={(item) => item.id}
         />
         <FAB
           icon="plus"
           style={{
-            position: 'absolute',
+            position: "absolute",
             right: 16,
             bottom: 52,
             backgroundColor: theme.colors.primary,
           }}
-          onPress={() =>{
-            setModalVisible(true)
-            setTeamToEdit(null)
-
+          onPress={() => {
+            setModalVisible(true);
+            setTeamToEdit(null);
           }}
         />
         <TeamModal
           visible={modalVisible}
           onDismiss={() => {
-            setModalVisible(false)
-            setTeamToEdit(null)
+            setModalVisible(false);
+            setTeamToEdit(null);
           }}
           onSubmit={handleTeamSubmit}
           teamToEdit={teamToEdit}
@@ -123,7 +126,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  
 });
 
 export default TeamsScreen;

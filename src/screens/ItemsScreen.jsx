@@ -17,7 +17,12 @@ const ItemsScreen = () => {
   const [searchItemText, setSearchItemText] = useState("");
   const [next, setNext] = useState("");
   const [previous, setPrevious] = useState("");
-  const { favoriteItemIds, loadFavoriteItems, addItemToFavorites, removeItemFromFavorites } = useContext(FavoritesContext);
+  const {
+    favoriteItemIds,
+    loadFavoriteItems,
+    addItemToFavorites,
+    removeItemFromFavorites,
+  } = useContext(FavoritesContext);
 
   const swipeConfig = {
     velocityThreshold: 0.3,
@@ -25,7 +30,9 @@ const ItemsScreen = () => {
     gestureIsClickThreshold: 5,
   };
   const loadAllItems = async () => {
-    const response = await fetch("https://pokeapi.co/api/v2/item?limit=100000&offset=0");
+    const response = await fetch(
+      "https://pokeapi.co/api/v2/item?limit=100000&offset=0"
+    );
     const data = await response.json();
     setItemsDatabase(data.results);
   };
@@ -46,9 +53,12 @@ const ItemsScreen = () => {
   const searchItems = (searchItemText) => {
     setSearchItemText(searchItemText);
     const filteredItems = itemsDatabase.filter((item) => {
-      return item.name.includes(searchItemText.toLowerCase()) || item.url.slice(34, -1) === searchItemText
+      return (
+        item.name.includes(searchItemText.toLowerCase()) ||
+        item.url.slice(34, -1) === searchItemText
+      );
     });
-    console.log(filteredItems)
+    console.log(filteredItems);
     setItems(filteredItems);
   };
 
@@ -83,7 +93,12 @@ const ItemsScreen = () => {
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         edges={["bottom", "left", "right"]}
       >
-        <View style={[styles.searchContainer, { backgroundColor: theme.colors.surface }]}>
+        <View
+          style={[
+            styles.searchContainer,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
           <Searchbar
             placeholder="Search Items"
             onChangeText={searchItems}
@@ -97,18 +112,18 @@ const ItemsScreen = () => {
           keyExtractor={(item) => item.name}
           renderItem={({ item }) => {
             const id = item.url.split("/").filter(Boolean).pop();
-          console.log(id)
-          return (
-          <ItemCard 
-            item={item} 
-            id={id} 
-            favoriteItems={favoriteItemIds} 
-            addItemToFavorites={addItemToFavorites} 
-            removeItemFromFavorites={removeItemFromFavorites}
-            theme={theme}
-          />        
-        )
-        }}
+            console.log(id);
+            return (
+              <ItemCard
+                item={item}
+                id={id}
+                favoriteItems={favoriteItemIds}
+                addItemToFavorites={addItemToFavorites}
+                removeItemFromFavorites={removeItemFromFavorites}
+                theme={theme}
+              />
+            );
+          }}
         />
         <View style={styles.buttonContainer}>
           {previous && (

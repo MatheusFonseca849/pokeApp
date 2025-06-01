@@ -23,10 +23,11 @@ const PokemonDetailsScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [sprites, setSprites] = useState({});
   const [currentSprite, setCurrentSprite] = useState("");
-console.log(pokemon)
-  const { addToFavorites, removeFromFavorites, favoriteArray } = useContext(PokemonContext);
+  console.log(pokemon);
+  const { addToFavorites, removeFromFavorites, favoriteArray } =
+    useContext(PokemonContext);
 
-  const {teams, addPokemonToTeam} = useContext(TeamsContext);
+  const { teams, addPokemonToTeam } = useContext(TeamsContext);
 
   const [teamModalVisible, setTeamModalVisible] = useState(false);
 
@@ -117,23 +118,29 @@ console.log(pokemon)
                 icon="arrow-left"
                 onPress={() => navigation.goBack()}
               />
-            <Text style={styles.title}>#{pokemon?.id} {pokemon?.name}</Text>
-            <View style={styles.favButtonContainer}>
-            <IconButton
-            icon={favoriteArray.includes(pokemon.id.toString()) ? "heart" : "heart-outline"}
-            style={styles.favButton}
-            onPress={() => {
-              favoriteArray.includes(pokemon.id.toString()) ? removeFromFavorites(pokemon.id.toString()) : addToFavorites(pokemon.id.toString())
-            }}
-            >
-            </IconButton>
-            <IconButton
-            icon="plus"
-            style={styles.favButton}
-            onPress={() => setTeamModalVisible(true)}
-            >
-            </IconButton>
-            </View>
+              <Text style={styles.title}>
+                #{pokemon?.id} {pokemon?.name}
+              </Text>
+              <View style={styles.favButtonContainer}>
+                <IconButton
+                  icon={
+                    favoriteArray.includes(pokemon.id.toString())
+                      ? "heart"
+                      : "heart-outline"
+                  }
+                  style={styles.favButton}
+                  onPress={() => {
+                    favoriteArray.includes(pokemon.id.toString())
+                      ? removeFromFavorites(pokemon.id.toString())
+                      : addToFavorites(pokemon.id.toString());
+                  }}
+                ></IconButton>
+                <IconButton
+                  icon="plus"
+                  style={styles.favButton}
+                  onPress={() => setTeamModalVisible(true)}
+                ></IconButton>
+              </View>
             </View>
 
             <View style={styles.imageContainer}>
@@ -200,7 +207,10 @@ console.log(pokemon)
           <AddToTeamModal
             visible={teamModalVisible}
             onDismiss={() => setTeamModalVisible(false)}
-            pokemon={{name: pokemon?.name, url: `https://pokeapi.co/api/v2/pokemon/${id}/`}}
+            pokemon={{
+              name: pokemon?.name,
+              url: `https://pokeapi.co/api/v2/pokemon/${id}/`,
+            }}
             teams={teams}
           />
         </ScrollView>

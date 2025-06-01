@@ -34,7 +34,7 @@ export const FavoritesStackScreen = () => {
     <FavoritesStack.Navigator>
       <FavoritesStack.Screen
         name="FavoritesScreen"
-        component={FavoritesTabs}  // Replace FavoritesScreen with FavoritesTabs
+        component={FavoritesTabs} // Replace FavoritesScreen with FavoritesTabs
         options={{ headerShown: false }}
       />
       <FavoritesStack.Screen
@@ -44,7 +44,7 @@ export const FavoritesStackScreen = () => {
       />
       <FavoritesStack.Screen
         name="ItemDetails"
-        component={ItemDetailsScreen}  // Add this to navigate to item details
+        component={ItemDetailsScreen} // Add this to navigate to item details
         options={{ headerShown: false }}
       />
     </FavoritesStack.Navigator>
@@ -89,4 +89,3 @@ export const TeamsStackScreen = () => {
     </TeamsStack.Navigator>
   );
 };
-    

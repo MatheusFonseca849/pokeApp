@@ -12,10 +12,15 @@ export const ThemeProvider = ({ children }) => {
 
   const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
-  const currentTheme = useMemo(() => (isDarkMode ? darkColors : lightColors), [isDarkMode]);
+  const currentTheme = useMemo(
+    () => (isDarkMode ? darkColors : lightColors),
+    [isDarkMode]
+  );
 
   return (
-    <ThemeContext.Provider value={{ theme: currentTheme, isDarkMode, toggleTheme }}>
+    <ThemeContext.Provider
+      value={{ theme: currentTheme, isDarkMode, toggleTheme }}
+    >
       {children(currentTheme)}
     </ThemeContext.Provider>
   );

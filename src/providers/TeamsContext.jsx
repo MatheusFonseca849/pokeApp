@@ -30,7 +30,6 @@ export const TeamsProvider = ({ children }) => {
       Toast.show({
         type: "error",
         text1: "Time com esse nome ja existe",
-        position: 'top-right'
       });
       return;
     }
@@ -43,15 +42,12 @@ export const TeamsProvider = ({ children }) => {
 
   const updateTeam = (updatedTeam) => {
     setTeams((prevTeams) =>
-      prevTeams.map((team) =>
-        team.id === updatedTeam.id ? updatedTeam : team
-      )
+      prevTeams.map((team) => (team.id === updatedTeam.id ? updatedTeam : team))
     );
-    
+
     Toast.show({
       type: "success",
       text1: "Time atualizado com sucesso",
-      position: 'top'
     });
   };
 
@@ -60,7 +56,6 @@ export const TeamsProvider = ({ children }) => {
     Toast.show({
       type: "error",
       text1: "Time removido com sucesso",
-      position: 'top-right'
     });
   };
 
@@ -71,7 +66,6 @@ export const TeamsProvider = ({ children }) => {
       Toast.show({
         type: "error",
         text1: "Time cheio",
-        position: 'top-right'
       });
       return;
     }
@@ -81,7 +75,6 @@ export const TeamsProvider = ({ children }) => {
       Toast.show({
         type: "error",
         text1: "Pokemon ja adicionado",
-        position: 'top-right'
       });
       return;
     }
@@ -96,9 +89,7 @@ export const TeamsProvider = ({ children }) => {
     Toast.show({
       type: "success",
       text1: "Pokemon adicionado com sucesso",
-      position: 'top-right'
     });
-    
   };
 
   const removePokemonFromTeam = (teamId, pokemon) => {

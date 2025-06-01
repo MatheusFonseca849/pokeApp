@@ -2,8 +2,13 @@ import { View, Text, StyleSheet, Image } from "react-native";
 import { Card, IconButton } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 
-const ItemCard = ({ item, favoriteItems, addItemToFavorites, removeItemFromFavorites, theme }) => {
-
+const ItemCard = ({
+  item,
+  favoriteItems,
+  addItemToFavorites,
+  removeItemFromFavorites,
+  theme,
+}) => {
   const navigation = useNavigation();
 
   const itemId = item.url.slice(
@@ -13,8 +18,13 @@ const ItemCard = ({ item, favoriteItems, addItemToFavorites, removeItemFromFavor
   const itemUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${item.name}.png`;
 
   return (
-    <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} onPress={() => navigation.navigate('ItemDetails', {id: itemId})}>
-      <Text style={[styles.title, { color: theme.colors.onSurface }]}>{itemId}</Text>
+    <Card
+      style={[styles.card, { backgroundColor: theme.colors.surface }]}
+      onPress={() => navigation.navigate("ItemDetails", { id: itemId })}
+    >
+      <Text style={[styles.title, { color: theme.colors.onSurface }]}>
+        {itemId}
+      </Text>
       <View style={styles.cardContainer}>
         <View style={styles.itemContainer}>
           <Image source={{ uri: itemUrl }} style={{ width: 64, height: 64 }} />
@@ -25,9 +35,10 @@ const ItemCard = ({ item, favoriteItems, addItemToFavorites, removeItemFromFavor
             icon={favoriteItems.includes(itemId) ? "heart" : "heart-outline"}
             style={styles.favButton}
             onPress={() => {
-              favoriteItems.includes(itemId) ? removeItemFromFavorites(itemId) : addItemToFavorites(itemId)
+              favoriteItems.includes(itemId)
+                ? removeItemFromFavorites(itemId)
+                : addItemToFavorites(itemId);
             }}
-           
           ></IconButton>
         </View>
       </View>
