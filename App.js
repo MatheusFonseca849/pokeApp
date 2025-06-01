@@ -8,6 +8,8 @@ import PokemonProvider from "./src/providers/PokemonContext";
 import FilterProvider from "./src/providers/FilterContext";
 import { FavoritesProvider } from "./src/providers/FavoritesContext";
 import { ThemeProvider } from "./src/providers/ThemeContext";
+import { TeamsProvider } from "./src/providers/TeamsContext";
+import Toast from "react-native-toast-message";
 
 export default function App() {
   // Create custom navigation themes that combine React Navigation's themes with our Paper theme colors
@@ -32,15 +34,18 @@ export default function App() {
       <ThemeProvider>
       {(theme) => (
           <PaperProvider theme={theme}>
+            <TeamsProvider>
             <FilterProvider>
               <FavoritesProvider>
                 <PokemonProvider>
                   <NavigationContainer theme={customNavigationTheme(theme)}>
                     <DrawerRoutes />
+                    <Toast />
                   </NavigationContainer>
                 </PokemonProvider>
               </FavoritesProvider>
             </FilterProvider>
+            </TeamsProvider>
           </PaperProvider>
         )}  
       </ThemeProvider>

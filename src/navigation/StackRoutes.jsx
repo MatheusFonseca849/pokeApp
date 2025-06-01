@@ -5,6 +5,7 @@ import FavoritesTabs from "../navigation/TabRoutes";
 import ItemsScreen from "../screens/ItemsScreen";
 import ItemDetailsScreen from "../screens/ItemDetailsScreen";
 import TeamsScreen from "../screens/TeamsScreen";
+import TeamDetailsScreen from "../screens/TeamDetailsScreen";
 
 const HomeStack = createStackNavigator();
 const FavoritesStack = createStackNavigator();
@@ -73,6 +74,16 @@ export const TeamsStackScreen = () => {
       <TeamsStack.Screen
         name="TeamsScreen"
         component={TeamsScreen}
+        options={{ headerShown: false }}
+      />
+      <TeamsStack.Screen
+        name="TeamDetails"
+        component={TeamDetailsScreen}
+        options={{ headerShown: false }}
+      />
+      <TeamsStack.Screen
+        name="PokemonDetails"
+        component={PokemonDetailsScreen}
         options={{ headerShown: false }}
       />
     </TeamsStack.Navigator>

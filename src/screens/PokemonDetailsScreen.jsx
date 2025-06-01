@@ -1,6 +1,8 @@
 import GestureRecognizer from "react-native-swipe-gestures";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, StyleSheet, ScrollView, Image } from "react-native";
+import { TeamsContext } from "../providers/TeamsContext";
+
 import {
   Text,
   ActivityIndicator,
@@ -13,6 +15,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { PokemonContext } from "../providers/PokemonContext";
+import AddToTeamModal from "../components/AddToTeamModal";
 
 const PokemonDetailsScreen = ({ route }) => {
   const { id } = route.params;
@@ -20,8 +23,12 @@ const PokemonDetailsScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [sprites, setSprites] = useState({});
   const [currentSprite, setCurrentSprite] = useState("");
-
+console.log(pokemon)
   const { addToFavorites, removeFromFavorites, favoriteArray } = useContext(PokemonContext);
+
+  const {teams, addPokemonToTeam} = useContext(TeamsContext);
+
+  const [teamModalVisible, setTeamModalVisible] = useState(false);
 
   const { colors } = useTheme();
 
@@ -111,6 +118,7 @@ const PokemonDetailsScreen = ({ route }) => {
                 onPress={() => navigation.goBack()}
               />
             <Text style={styles.title}>#{pokemon?.id} {pokemon?.name}</Text>
+            <View style={styles.favButtonContainer}>
             <IconButton
             icon={favoriteArray.includes(pokemon.id.toString()) ? "heart" : "heart-outline"}
             style={styles.favButton}
@@ -119,6 +127,13 @@ const PokemonDetailsScreen = ({ route }) => {
             }}
             >
             </IconButton>
+            <IconButton
+            icon="plus"
+            style={styles.favButton}
+            onPress={() => setTeamModalVisible(true)}
+            >
+            </IconButton>
+            </View>
             </View>
 
             <View style={styles.imageContainer}>
@@ -182,6 +197,12 @@ const PokemonDetailsScreen = ({ route }) => {
               />
             </View>
           </Card>
+          <AddToTeamModal
+            visible={teamModalVisible}
+            onDismiss={() => setTeamModalVisible(false)}
+            pokemon={{name: pokemon?.name, url: `https://pokeapi.co/api/v2/pokemon/${id}/`}}
+            teams={teams}
+          />
         </ScrollView>
       </GestureRecognizer>
     </SafeAreaView>
@@ -195,6 +216,10 @@ const styles = StyleSheet.create({
   flexContainer: {
     flex: 1,
     marginTop: -40,
+  },
+  favButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
   },
   loadingContainer: {
     flex: 1,
