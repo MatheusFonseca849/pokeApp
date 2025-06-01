@@ -7,8 +7,15 @@ import { TeamsContext } from "../providers/TeamsContext";
 const TeamModal = ({ visible, onDismiss, onSubmit, teamToEdit }) => {
   const [pickerTarget, setPickerTarget] = useState(null);
 
-  const { teamName, color, backgroundColor, setTeamName, setColor, setBackgroundColor } = useContext(TeamsContext);
-  
+  const {
+    teamName,
+    color,
+    backgroundColor,
+    setTeamName,
+    setColor,
+    setBackgroundColor,
+  } = useContext(TeamsContext);
+
   // Effect to set form data when teamToEdit changes
   useEffect(() => {
     if (teamToEdit) {
@@ -23,16 +30,16 @@ const TeamModal = ({ visible, onDismiss, onSubmit, teamToEdit }) => {
       setBackgroundColor("#cccccc");
     }
   }, [teamToEdit, visible]); // Re-run when modal becomes visible
-  
+
   const handleSave = () => {
     if (!teamName) return;
-    
+
     const teamData = {
       name: teamName,
       color,
       backgroundColor,
     };
-    
+
     if (teamToEdit) {
       // If editing, preserve id and pokemon
       teamData.id = teamToEdit.id;
@@ -42,11 +49,11 @@ const TeamModal = ({ visible, onDismiss, onSubmit, teamToEdit }) => {
       teamData.id = Date.now().toString();
       teamData.pokemon = [];
     }
-    
+
     onSubmit(teamData, !!teamToEdit); // Pass data and whether it's an edit
     resetForm();
   };
-  
+
   const resetForm = () => {
     // Only reset form if not editing or after closing modal
     if (!teamToEdit) {
@@ -66,7 +73,9 @@ const TeamModal = ({ visible, onDismiss, onSubmit, teamToEdit }) => {
   return (
     <Portal>
       <Dialog visible={visible} onDismiss={resetForm}>
-        <Dialog.Title>{teamToEdit ? "Editar time" : "Criar novo time"}</Dialog.Title>
+        <Dialog.Title>
+          {teamToEdit ? "Editar time" : "Criar novo time"}
+        </Dialog.Title>
         <Dialog.Content>
           <TextInput
             label="Nome do time"
@@ -110,14 +119,18 @@ const TeamModal = ({ visible, onDismiss, onSubmit, teamToEdit }) => {
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={resetForm}>Cancelar</Button>
-          <Button onPress={() => {
-            if(!teamName){
-              alert("Por favor, insira um nome para o time.");
-              return;
-            }
-            handleSave()
-            resetForm()
-            }}>Salvar</Button>
+          <Button
+            onPress={() => {
+              if (!teamName) {
+                alert("Por favor, insira um nome para o time.");
+                return;
+              }
+              handleSave();
+              resetForm();
+            }}
+          >
+            Salvar
+          </Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>

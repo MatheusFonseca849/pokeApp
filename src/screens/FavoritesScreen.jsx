@@ -17,13 +17,28 @@ const FavoritesScreen = () => {
   }, [favoriteArray]);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom', 'left', 'right']}>
-      <View style={{ flex: 1, padding: 10, backgroundColor: theme.colors.background }}>
-
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={["bottom", "left", "right"]}
+    >
+      <View
+        style={{
+          flex: 1,
+          padding: 10,
+          backgroundColor: theme.colors.background,
+        }}
+      >
         {loading ? (
-          <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
+          <View
+            style={[
+              styles.loadingContainer,
+              { backgroundColor: theme.colors.background },
+            ]}
+          >
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={{ color: theme.colors.onBackground }}>Carregando favoritos</Text>
+            <Text style={{ color: theme.colors.onBackground }}>
+              Carregando favoritos
+            </Text>
           </View>
         ) : favoritePokemon.length > 0 ? (
           <FlatList
@@ -32,7 +47,9 @@ const FavoritesScreen = () => {
             renderItem={({ item }) => <PokeCard item={item} />}
           />
         ) : (
-          <Text style={{ color: theme.colors.onBackground }}>Você ainda não adicionou nenhum favorito!</Text>
+          <Text style={{ color: theme.colors.onBackground }}>
+            Você ainda não adicionou nenhum favorito!
+          </Text>
         )}
       </View>
     </SafeAreaView>

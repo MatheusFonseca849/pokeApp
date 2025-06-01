@@ -9,8 +9,6 @@ import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FilterContext } from "../providers/FilterContext";
 import { ThemeContext } from "../providers/ThemeContext";
-import { TeamsContext } from "../providers/TeamsContext";
-import AddToTeamModal from "../components/AddToTeamModal";
 
 export default function HomeScreen() {
   const { theme } = useContext(ThemeContext);
@@ -18,9 +16,9 @@ export default function HomeScreen() {
 
   const [filtersVisible, setFiltersVisible] = useState(false);
 
-  const { 
-    isFiltering, 
-    pokeTypes, 
+  const {
+    isFiltering,
+    pokeTypes,
     selectedTypes,
     selectedGenerations,
     getPokeTypes,
@@ -28,7 +26,7 @@ export default function HomeScreen() {
     getGenerations,
     toggleTypeSelection,
     toggleGenerationSelection,
-    clearSelection
+    clearSelection,
   } = useContext(FilterContext);
 
   const {
@@ -46,8 +44,6 @@ export default function HomeScreen() {
     onSwipeRight,
     swipeConfig,
   } = useContext(PokemonContext);
-
-  
 
   const animatedHeight = useRef(new Animated.Value(0)).current;
 
@@ -74,7 +70,6 @@ export default function HomeScreen() {
     }
   }, [contentHeight]);
 
-
   const toggleFilters = () => {
     if (filtersVisible) {
       Animated.timing(animatedHeight, {
@@ -94,31 +89,56 @@ export default function HomeScreen() {
     }
   };
 
-
   return (
     <GestureRecognizer
-      style={[styles.container, {backgroundColor: theme.colors.background}]}
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
       onSwipeLeft={onSwipeLeft}
       onSwipeRight={onSwipeRight}
       config={swipeConfig}
     >
       <SafeAreaView
-        style={[styles.container, {backgroundColor: theme.colors.background}]}
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
         edges={["bottom", "left", "right"]}
       >
-        <View style={[styles.searchContainer, {backgroundColor: theme.colors.surface}]}>
+        <View
+          style={[
+            styles.searchContainer,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
           <Searchbar
             placeholder="Search Pokemon"
             onChangeText={searchPokemon}
             value={searchText}
             style={styles.searchBar}
           />
-          <IconButton
-            mode="contained"
-            style={styles.button}
-            icon={filtersVisible ? "filter" : "filter-outline"}
-            onPress={toggleFilters}
-          />
+          <View style={{ position: "relative" }}>
+            <IconButton
+              mode="contained"
+              style={[
+                styles.button,
+                // Apply conditional styling when filters are active
+                (selectedTypes.length > 0 || selectedGenerations.length > 0) &&
+                  styles.activeFilterButton,
+              ]}
+              icon={filtersVisible ? "filter" : "filter-outline"}
+              onPress={toggleFilters}
+            />
+
+            {/* Show badge with clear button when filters are active but panel is closed */}
+            {(selectedTypes.length > 0 || selectedGenerations.length > 0) &&
+              !filtersVisible && (
+                <View style={styles.filterBadge}>
+                  <IconButton
+                    icon="close-circle"
+                    size={16}
+                    iconColor="white"
+                    style={styles.badgeButton}
+                    onPress={() => clearSelection(loadPokemon)}
+                  />
+                </View>
+              )}
+          </View>
         </View>
         <Animated.View
           style={[styles.animatedContainer, { maxHeight: animatedHeight }]}
@@ -132,18 +152,11 @@ export default function HomeScreen() {
                   setContentHeight(height);
                 }}
               >
-                {(selectedTypes.length > 0 || selectedGenerations.length > 0) && (
-                  <IconButton
-                    icon="close-circle"
-                    onPress={() => clearSelection(loadPokemon)}
-                  />
-                )}
                 <List.Section>
                   <List.Accordion
                     title="Filtrar por Tipo"
                     left={(props) => <List.Icon {...props} icon="shape" />}
-                    multiple  
-                    
+                    multiple
                   >
                     {pokeTypes.map((type) => (
                       <List.Item
@@ -151,7 +164,13 @@ export default function HomeScreen() {
                           type.name.charAt(0).toUpperCase() + type.name.slice(1)
                         }
                         key={type.name}
-                        onPress={() => toggleTypeSelection(type.name, setPokeList, loadPokemon)}
+                        onPress={() =>
+                          toggleTypeSelection(
+                            type.name,
+                            setPokeList,
+                            loadPokemon
+                          )
+                        }
                         left={(props) => (
                           <List.Icon
                             {...props}
@@ -178,7 +197,13 @@ export default function HomeScreen() {
                       <List.Item
                         title={generation.name}
                         key={generation.name}
-                        onPress={() => toggleGenerationSelection(generation.name, setPokeList, loadPokemon)}
+                        onPress={() =>
+                          toggleGenerationSelection(
+                            generation.name,
+                            setPokeList,
+                            loadPokemon
+                          )
+                        }
                         left={(props) => (
                           <List.Icon
                             {...props}
@@ -268,10 +293,36 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
   },
+
   buttonContainer: {
     display: "flex",
     flexDirection: "row",
     gap: 8,
     justifyContent: "center",
+  },
+
+  activeFilterButton: {
+    backgroundColor: "#007aff",
+  },
+
+  filterBadge: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: "red",
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1,
+  },
+
+  badgeButton: {
+    marginRight: 5,
+    marginTop: 5,
+    padding: 0,
+    width: 25,
+    height: 25,
   },
 });

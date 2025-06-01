@@ -19,7 +19,6 @@ const FilterProvider = ({ children }) => {
       if (cachedTypes) {
         setPokeTypes(JSON.parse(cachedTypes));
       } else {
-        // If no cached data, fetch types
         await getPokeTypes();
       }
 
@@ -28,7 +27,6 @@ const FilterProvider = ({ children }) => {
       if (cachedGenerations) {
         setGenerations(JSON.parse(cachedGenerations));
       } else {
-        // If no cached data, fetch generations
         await getGenerations();
       }
 

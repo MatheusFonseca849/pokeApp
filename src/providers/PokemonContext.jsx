@@ -199,11 +199,11 @@ export const PokemonProvider = ({ children }) => {
   };
 
   const addToFavorites = (id) => {
-    setFavoriteArray(prev => [...prev, id]);
+    setFavoriteArray((prev) => [...prev, id]);
   };
-  
-  const removeFromFavorites = (id) => {   
-    setFavoriteArray(prev => prev.filter(pokemon => pokemon !== id));
+
+  const removeFromFavorites = (id) => {
+    setFavoriteArray((prev) => prev.filter((pokemon) => pokemon !== id));
   };
 
   const swipeConfig = {

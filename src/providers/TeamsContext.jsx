@@ -42,11 +42,9 @@ export const TeamsProvider = ({ children }) => {
 
   const updateTeam = (updatedTeam) => {
     setTeams((prevTeams) =>
-      prevTeams.map((team) =>
-        team.id === updatedTeam.id ? updatedTeam : team
-      )
+      prevTeams.map((team) => (team.id === updatedTeam.id ? updatedTeam : team))
     );
-    
+
     Toast.show({
       type: "success",
       text1: "Time atualizado com sucesso",
@@ -92,7 +90,6 @@ export const TeamsProvider = ({ children }) => {
       type: "success",
       text1: "Pokemon adicionado com sucesso",
     });
-    
   };
 
   const removePokemonFromTeam = (teamId, pokemon) => {
