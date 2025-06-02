@@ -52,14 +52,14 @@ export const PokemonProvider = ({ children }) => {
   const loadPokemonData = async () => {
     setLoading(true);
     try {
-      // 1. First load favorites from AsyncStorage
+      // First load favorites from AsyncStorage
       const favorites = await AsyncStorage.getItem("@favorites");
       if (favorites) {
         const favoritesList = JSON.parse(favorites);
         setFavoriteArray(favoritesList);
       }
 
-      // 2. Check for cached Pokemon list
+      // Check for cached Pokemon list
       const cachedPokeList = await AsyncStorage.getItem("@pokeList");
       if (cachedPokeList) {
         const pokeListData = JSON.parse(cachedPokeList);
@@ -71,12 +71,11 @@ export const PokemonProvider = ({ children }) => {
         await loadPokemon();
       }
 
-      // 3. Optionally load the full database in background if needed
+      // Optionally load full database in background if needed
       const cachedDatabase = await AsyncStorage.getItem("@pokeDatabase");
       if (cachedDatabase) {
         setPokeDatabase(JSON.parse(cachedDatabase));
       } else if (pokeDatabase.length === 0) {
-        // Don't await this - let it load in background
         loadAllPokemon();
       }
     } catch (error) {

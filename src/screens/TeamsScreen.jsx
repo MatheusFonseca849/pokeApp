@@ -93,7 +93,6 @@ const TeamsScreen = () => {
               }
             />
           )}
-          keyExtractor={(item) => item.id}
         />
         <FAB
           icon="plus"

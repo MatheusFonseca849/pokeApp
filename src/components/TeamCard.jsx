@@ -46,7 +46,6 @@ const TeamCard = ({ team, onPress, onEdit }) => {
               />
             );
           }}
-          keyExtractor={(item) => item.id}
         />
       </Card.Content>
     </Card>

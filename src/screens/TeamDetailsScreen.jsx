@@ -96,7 +96,6 @@ const TeamDetailsScreen = ({ route }) => {
               </TouchableOpacity>
             );
           }}
-          keyExtractor={(item) => item.id}
         />
       </Card>
     </SafeAreaView>

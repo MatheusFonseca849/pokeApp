@@ -184,7 +184,7 @@ const PokemonDetailsScreen = ({ route }) => {
                     </View>
                   ))}
                 </View>
-                <View>
+                <View style={{ marginLeft: 64 }}>
                   <RadarChart
                     data={pokemon?.stats.map((stat) => {
                       const statName =
@@ -203,6 +203,7 @@ const PokemonDetailsScreen = ({ route }) => {
                       "#006176",
                       "#000000",
                     ]}
+                    labelSize={12}
                     strokeWidth={[0.5, 0.5, 0.5, 0.5, 1]}
                     strokeOpacity={[1, 1, 1, 1, 1]}
                     gradientColor={{
@@ -210,6 +211,7 @@ const PokemonDetailsScreen = ({ route }) => {
                       endColor: "#ffffff",
                       count: 5,
                     }}
+                    maxValue={200}
                     dataFillColor="#23c55e50"
                     size={200}
                   />
@@ -319,7 +321,7 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "center",
   },
   statRow: {
