@@ -1,6 +1,6 @@
-import { StyleSheet, View, FlatList, Animated, Easing } from "react-native";
+import { StyleSheet, View, FlatList, Animated, Easing, Text } from "react-native";
 import React, { useContext, useEffect, useState, useRef } from "react";
-import { IconButton, Searchbar, List } from "react-native-paper";
+import { IconButton, Searchbar, List, ActivityIndicator } from "react-native-paper";
 import GestureRecognizer from "react-native-swipe-gestures";
 import { PokemonContext } from "../providers/PokemonContext";
 import PokeCard from "../components/PokeCard";
@@ -43,6 +43,7 @@ export default function HomeScreen() {
     onSwipeLeft,
     onSwipeRight,
     swipeConfig,
+    loading
   } = useContext(PokemonContext);
 
   const animatedHeight = useRef(new Animated.Value(0)).current;
@@ -227,6 +228,14 @@ export default function HomeScreen() {
             </ScrollView>
           )}
         </Animated.View>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={{ color: theme.colors.onBackground }}>
+              Carregando Pokemons
+            </Text>
+          </View>
+        ) : (
         <FlatList
           style={styles.list}
           data={pokeList}
@@ -235,6 +244,7 @@ export default function HomeScreen() {
             return <PokeCard item={item} />;
           }}
         />
+        )}
         {searchText == "" && !isFiltering && (
           <View style={styles.buttonContainer}>
             {previous && (
@@ -273,8 +283,7 @@ const styles = StyleSheet.create({
 
   searchBar: {
     flex: 1,
-    height: 40,
-    marginVertical: 0,
+    marginVertical: 4,
   },
 
   button: {
@@ -292,6 +301,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     gap: 12,
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
   },
 
   buttonContainer: {

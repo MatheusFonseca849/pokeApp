@@ -1,32 +1,38 @@
-import { Text } from "react-native";
 import { ThemeContext } from "../providers/ThemeContext";
 import { useContext } from "react";
-import { Card, IconButton } from "react-native-paper";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
-import GestureRecognizer from "react-native-swipe-gestures";
 import TeamModal from "../components/TeamModal";
+import { Text } from "react-native";
 import { FAB } from "react-native-paper";
 import { TeamsContext } from "../providers/TeamsContext";
 import { FlatList } from "react-native";
 import TeamCard from "../components/TeamCard";
 import { useNavigation } from "@react-navigation/native";
+import AddPokemonModal from "../components/AddPokemonModal";
 
 const TeamsScreen = () => {
-  const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [teamToEdit, setTeamToEdit] = useState(null);
+  const [addPokemonModalVisible, setAddPokemonModalVisible] = useState(false);
 
-  const { loadTeams, teams, createTeam, updateTeam } = useContext(TeamsContext);
+  const { loadTeams, teams, createTeam, updateTeam, modalReopenData, setModalReopenData } = useContext(TeamsContext);
 
   const navigation = useNavigation();
-  console.log(teams);
-  const swipeConfig = {
-    velocityThreshold: 0.3,
-    directionalOffsetThreshold: 120,
-    gestureIsClickThreshold: 5,
-  };
+
+  useEffect(() => {
+    if (modalReopenData) {
+      // Reopen the modal with the saved data
+      setTeamToEdit({ 
+        id: modalReopenData.teamId, 
+        color: modalReopenData.teamColor 
+      });
+      setAddPokemonModalVisible(true);
+      // Reset the reopen data
+      setModalReopenData(null);
+    }
+  }, [modalReopenData]);
 
   const editTeam = (team) => {
     setTeamToEdit(team);
@@ -39,28 +45,8 @@ const TeamsScreen = () => {
     } else {
       createTeam(teamData);
     }
-    setTeamToEdit(null); // Clear the edit state after submission
+    setTeamToEdit(null);
   };
-  /* 
-    Team Object sample
-
-    {
-        name: "Team Name",
-        id: "Team ID",
-        color: "#FF0000",
-        backgroundColor: "#FF000060"
-        pokemon: [
-            {
-                name: "Pokemon Name",
-                url: "Pokemon URL"
-            },
-            {
-                name: "Pokemon Name",
-                url: "Pokemon URL"
-            }
-        ]
-    }
-    */
 
   useEffect(() => {
     loadTeams();
@@ -68,19 +54,21 @@ const TeamsScreen = () => {
 
   const { theme } = useContext(ThemeContext);
   return (
-    <GestureRecognizer
+    <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
-      onSwipeLeft={() => {
-        console.log("Swiped Left");
-      }}
-      onSwipeRight={() => {
-        console.log("Swiped Right");
-      }}
-      config={swipeConfig}
     >
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-      >
+      {teams.length == 0 ? (
+        <Text
+          style={{
+            color: theme.colors.onSurface,
+            textAlign: "center",
+            marginTop: 20,
+            fontSize: 20,
+          }}
+        >
+          Nenhum time encontrado
+        </Text>
+      ) : (
         <FlatList
           data={teams}
           renderItem={({ item }) => (
@@ -91,33 +79,43 @@ const TeamsScreen = () => {
               onPress={() =>
                 navigation.navigate("TeamDetails", { teamId: item.id })
               }
+              onAddPokemon={() => {
+                setAddPokemonModalVisible(true);
+                setTeamToEdit(item);
+              }}
             />
           )}
         />
-        <FAB
-          icon="plus"
-          style={{
-            position: "absolute",
-            right: 16,
-            bottom: 52,
-            backgroundColor: theme.colors.primary,
-          }}
-          onPress={() => {
-            setModalVisible(true);
-            setTeamToEdit(null);
-          }}
-        />
-        <TeamModal
-          visible={modalVisible}
-          onDismiss={() => {
-            setModalVisible(false);
-            setTeamToEdit(null);
-          }}
-          onSubmit={handleTeamSubmit}
-          teamToEdit={teamToEdit}
-        />
-      </SafeAreaView>
-    </GestureRecognizer>
+      )}
+      <FAB
+        icon="plus"
+        style={{
+          position: "absolute",
+          right: 16,
+          bottom: 52,
+          backgroundColor: theme.colors.primary,
+        }}
+        onPress={() => {
+          setModalVisible(true);
+          setTeamToEdit(null);
+        }}
+      />
+      <TeamModal
+        visible={modalVisible}
+        onDismiss={() => {
+          setModalVisible(false);
+          setTeamToEdit(null);
+        }}
+        onSubmit={handleTeamSubmit}
+        teamToEdit={teamToEdit}
+      />
+      <AddPokemonModal
+        visible={addPokemonModalVisible}
+        onDismiss={() => setAddPokemonModalVisible(false)}
+        teamId={teamToEdit?.id}
+        teamColor={teamToEdit?.color}
+      />
+    </SafeAreaView>
   );
 };
 

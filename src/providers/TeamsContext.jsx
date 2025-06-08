@@ -8,6 +8,7 @@ export const TeamsProvider = ({ children }) => {
   const [teamName, setTeamName] = useState("");
   const [color, setColor] = useState("#000000");
   const [backgroundColor, setBackgroundColor] = useState("#cccccc");
+  const [modalReopenData, setModalReopenData] = useState(null);
 
   const hasLoaded = useRef(false); // prevent initial write on mount
 
@@ -131,6 +132,8 @@ export const TeamsProvider = ({ children }) => {
         addPokemonToTeam,
         removePokemonFromTeam,
         updateTeam,
+        modalReopenData,
+        setModalReopenData,
         loading,
       }}
     >

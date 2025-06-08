@@ -107,11 +107,9 @@ export const PokemonProvider = ({ children }) => {
     if (cachedDatabase) {
       setPokeDatabase(JSON.parse(cachedDatabase));
       setLoading(false);
-      console.log("Using cached pokemon database");
       return;
     }
 
-    console.log("Fetching full pokemon database");
     axios
       .get(`${baseUrl}pokemon?limit=100000&offset=0`)
       .then((response) => {
@@ -161,7 +159,6 @@ export const PokemonProvider = ({ children }) => {
         pokemon.url.slice(34, -1) === searchText
       );
     });
-    console.log(filteredPokemon);
     setPokeList(filteredPokemon);
   };
 

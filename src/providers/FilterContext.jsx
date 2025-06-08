@@ -29,19 +29,6 @@ const FilterProvider = ({ children }) => {
       } else {
         await getGenerations();
       }
-
-      // Load user's selected filters if any
-      const savedSelectedTypes = await AsyncStorage.getItem("@selectedTypes");
-      if (savedSelectedTypes) {
-        setSelectedTypes(JSON.parse(savedSelectedTypes));
-      }
-
-      const savedSelectedGenerations = await AsyncStorage.getItem(
-        "@selectedGenerations"
-      );
-      if (savedSelectedGenerations) {
-        setSelectedGenerations(JSON.parse(savedSelectedGenerations));
-      }
     } catch (error) {
       console.error("Error loading filter data:", error);
     }
@@ -51,13 +38,7 @@ const FilterProvider = ({ children }) => {
 
   const getPokeTypes = async () => {
     try {
-      const cachedTypes = await AsyncStorage.getItem("@pokeTypes");
-      if (cachedTypes) {
-        setPokeTypes(JSON.parse(cachedTypes));
-        return;
-      }
-
-      // Fetch from API if not cached
+      // Fetch from API
       const response = await axios.get(`${baseUrl}type`);
       setPokeTypes(response.data.results);
       AsyncStorage.setItem("@pokeTypes", JSON.stringify(response.data.results));
@@ -121,14 +102,7 @@ const FilterProvider = ({ children }) => {
 
   const getGenerations = async () => {
     try {
-      // Check cache first
-      const cachedGenerations = await AsyncStorage.getItem("@pokeGenerations");
-      if (cachedGenerations) {
-        setGenerations(JSON.parse(cachedGenerations));
-        return;
-      }
-
-      // Fetch from API if not cached
+      // Fetch from API
       const response = await axios.get(`${baseUrl}generation`);
       setGenerations(response.data.results);
 
@@ -202,17 +176,6 @@ const FilterProvider = ({ children }) => {
     }
   }, [selectedTypes]);
 
-  // Save selected generations when they change
-  useEffect(() => {
-    if (hasLoaded.current) {
-      AsyncStorage.setItem(
-        "@selectedGenerations",
-        JSON.stringify(selectedGenerations)
-      ).catch((error) =>
-        console.error("Failed to save selected generations:", error)
-      );
-    }
-  }, [selectedGenerations]);
   return (
     <FilterContext.Provider
       value={{

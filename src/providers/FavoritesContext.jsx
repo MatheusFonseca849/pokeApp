@@ -53,8 +53,6 @@ export const FavoritesProvider = ({ children }) => {
         JSON.stringify(favoritesList)
       );
       setFavoriteItemIds(favoritesList);
-      console.log(`Added ${id} to favorites`);
-      console.log(favoritesList);
     } catch (e) {
       console.error(e);
     }
@@ -71,8 +69,6 @@ export const FavoritesProvider = ({ children }) => {
           JSON.stringify(updatedList)
         );
         setFavoriteItemIds(updatedList);
-        console.log(`Removed ${id} from favorites`);
-        console.log(updatedList);
       }
     } catch (e) {
       console.error(e);

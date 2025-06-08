@@ -17,7 +17,6 @@ const ItemDetailsScreen = ({ route }) => {
   const { id } = route.params;
   const { favoriteItemIds, addItemToFavorites, removeItemFromFavorites } =
     useContext(FavoritesContext);
-  console.log("Current Item ID:", id);
 
   const swipeConfig = {
     velocityThreshold: 0.3,
@@ -56,7 +55,6 @@ const ItemDetailsScreen = ({ route }) => {
     navigation.setParams({ id: nextId });
   };
 
-  console.log("Item Info:", itemInfo);
 
   if (loading) {
     return (

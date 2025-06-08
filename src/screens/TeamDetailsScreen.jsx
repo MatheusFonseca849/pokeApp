@@ -8,12 +8,15 @@ import { ThemeContext } from "../providers/ThemeContext";
 import { TeamsContext } from "../providers/TeamsContext";
 import { FlatList, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "react-native-paper";
 
 const TeamDetailsScreen = ({ route }) => {
   const { teamId } = route.params;
   const navigation = useNavigation();
   const { theme } = useContext(ThemeContext);
   const { teams, removePokemonFromTeam } = useContext(TeamsContext);
+
+  const { colors } = useTheme();
 
   // Set the header title to the team name
   useLayoutEffect(() => {
@@ -56,8 +59,8 @@ const TeamDetailsScreen = ({ route }) => {
       >
         <Card.Title title={`${team.name} Details`} />
         <Card.Content>
-          <Text style={{ marginBottom: 10 }}>Team Color: {team.color}</Text>
-          <Text>Pokemon Count: {team.pokemon.length}</Text>
+          <Text style={{ marginBottom: 10, color: colors.onSurface }}>Team Color: {team.color}</Text>
+          <Text style={{ color: colors.onSurface }}>Pokemon Count: {team.pokemon.length}</Text>
         </Card.Content>
         <FlatList
           contentContainerStyle={{
@@ -82,7 +85,7 @@ const TeamDetailsScreen = ({ route }) => {
                 <Image
                   key={pokemonId}
                   source={{ uri: imageUrl }}
-                  style={{ width: 98, height: 98 }}
+                  style={{ width: 112, height: 112 }}
                 />
                 <TouchableOpacity
                   style={styles.removeButton}
