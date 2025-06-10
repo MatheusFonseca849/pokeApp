@@ -27,7 +27,7 @@ export default function DrawerRoutes() {
       <Drawer.Screen
     name="Home"
     component={HomeStackScreen}
-    options={({ navigation }) => {
+    options={() => {
       const { toggleTheme, isDarkMode } = useContext(ThemeContext);
 
       return {
@@ -49,13 +49,13 @@ export default function DrawerRoutes() {
       <Drawer.Screen
       name='Favorites'
       component={FavoritesStackScreen}
-      options={({ navigation }) => {
+      options={() => {
         const { toggleTheme, isDarkMode } = useContext(ThemeContext);
 
         return {
           headerTitle: "Favoritos",
-          drawerIcon: (color, size) => (
-            <Ionicons name="heart" color={color} size={size} />
+          drawerIcon: ({color, size}) => (
+            <Ionicons name="heart" color={color} size={size}/>
           ),
           headerRight: () => (
             <IconButton
@@ -71,13 +71,13 @@ export default function DrawerRoutes() {
       <Drawer.Screen
       name='Items'
       component={ItemsStackScreen}
-      options={({ navigation }) => {
+      options={() => {
         const { toggleTheme, isDarkMode } = useContext(ThemeContext);
 
         return {
           headerTitle: "Itens",
-          drawerIcon: (color, size) => (
-            <Ionicons name="heart" color={color} size={size} />
+          drawerIcon: ({color, size}) => (
+            <Ionicons name="flask" color={color} size={size}/>
           ),
           headerRight: () => (
             <IconButton
@@ -93,13 +93,13 @@ export default function DrawerRoutes() {
       <Drawer.Screen
       name='Teams'
       component={TeamsStackScreen}
-      options={({ navigation }) => {
+      options={() => {
         const { toggleTheme, isDarkMode } = useContext(ThemeContext);
 
         return {
           headerTitle: "Times",
-          drawerIcon: (color, size) => (
-            <Ionicons name="heart" color={color} size={size} />
+          drawerIcon: ({color, size}) => (
+            <Ionicons name="invert-mode" color={color} size={size} />
           ),
           headerRight: () => (
             <IconButton

@@ -1,9 +1,9 @@
-import { FlatList, Image, View } from "react-native";
+import { FlatList, Image, TouchableOpacity, View } from "react-native";
 import { Card, IconButton, Text } from "react-native-paper";
 import { useContext } from "react";
 import { TeamsContext } from "../providers/TeamsContext";
 
-const TeamCard = ({ team, onPress, onEdit }) => {
+const TeamCard = ({ team, onPress, onEdit, onAddPokemon }) => {
   const { removeTeam } = useContext(TeamsContext);
 
   return (
@@ -12,7 +12,7 @@ const TeamCard = ({ team, onPress, onEdit }) => {
         borderWidth: 3,
         borderLeftWidth: 32,
         borderColor: team.color,
-        marginBottom: 8,
+        marginBottom: 16,
       }}
       onPress={onPress}
     >
@@ -35,18 +35,30 @@ const TeamCard = ({ team, onPress, onEdit }) => {
         <FlatList
           style={{ flex: 1, flexDirection: "row" }}
           data={team.pokemon}
+          ListFooterComponent={() => 
+            team.pokemon.length < 6 ? 
+            <TouchableOpacity
+            onPress={(e) => {
+              e.preventDefault()
+              onAddPokemon()
+            }}
+            >
+
+              <IconButton icon="plus" size={24} />
+            </TouchableOpacity>
+            : null
+          }
           renderItem={({ item }) => {
             const pokemonId = item.url.slice(34, -1);
             const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`;
             return (
               <Image
-                key={pokemonId}
-                source={{ uri: imageUrl }}
-                style={{ width: 48, height: 48 }}
+              key={pokemonId}
+              source={{ uri: imageUrl }}
+              style={{ width: 48, height: 48 }}
               />
             );
           }}
-          keyExtractor={(item) => item.id}
         />
       </Card.Content>
     </Card>

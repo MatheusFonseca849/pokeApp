@@ -10,6 +10,7 @@ import { FavoritesProvider } from "./src/providers/FavoritesContext";
 import { ThemeProvider } from "./src/providers/ThemeContext";
 import { TeamsProvider } from "./src/providers/TeamsContext";
 import Toast from "react-native-toast-message";
+import { StatusBar } from "react-native";
 
 export default function App() {
   // Create custom navigation themes that combine React Navigation's themes with our Paper theme colors
@@ -39,6 +40,9 @@ export default function App() {
               <FavoritesProvider>
                 <PokemonProvider>
                   <NavigationContainer theme={customNavigationTheme(theme)}>
+                    <StatusBar
+                      barStyle={theme.dark ? "light-content" : "dark-content"}
+                    />
                     <DrawerRoutes />
                     <Toast />
                   </NavigationContainer>

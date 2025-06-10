@@ -2,6 +2,7 @@ import GestureRecognizer from "react-native-swipe-gestures";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, StyleSheet, ScrollView, Image } from "react-native";
 import { TeamsContext } from "../providers/TeamsContext";
+import { RadarChart } from "@salmonco/react-native-radar-chart";
 
 import {
   Text,
@@ -23,11 +24,10 @@ const PokemonDetailsScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [sprites, setSprites] = useState({});
   const [currentSprite, setCurrentSprite] = useState("");
-  console.log(pokemon);
   const { addToFavorites, removeFromFavorites, favoriteArray } =
     useContext(PokemonContext);
 
-  const { teams, addPokemonToTeam } = useContext(TeamsContext);
+  const { teams, setModalReopenData } = useContext(TeamsContext);
 
   const [teamModalVisible, setTeamModalVisible] = useState(false);
 
@@ -40,6 +40,20 @@ const PokemonDetailsScreen = ({ route }) => {
     directionalOffsetThreshold: 120,
     gestureIsClickThreshold: 5,
   };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      if (route.params?.returnToModal) {
+        // Set data to reopen modal when returning
+        setModalReopenData({
+          teamId: route.params.teamId,
+          teamColor: route.params.teamColor
+        });
+      }
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
 
   const goToPreviousPokemon = () => {
     if (parseInt(id) > 1) {
@@ -74,8 +88,6 @@ const PokemonDetailsScreen = ({ route }) => {
     } else if (direction === "right" && currentIndex < spriteUrls.length - 1) {
       setCurrentSprite(spriteUrls[currentIndex + 1]);
     }
-
-    console.log("Current sprite URL:", currentSprite);
   };
 
   useEffect(() => {
@@ -174,12 +186,49 @@ const PokemonDetailsScreen = ({ route }) => {
               </View>
 
               <Text style={styles.sectionTitle}>Stats</Text>
-              {pokemon?.stats.map((stat) => (
-                <View key={stat.stat.name} style={styles.statRow}>
-                  <Text style={styles.statName}>{stat.stat.name}:</Text>
-                  <Text style={styles.statValue}>{stat.base_stat}</Text>
+              <View style={styles.statsContainer}>
+                <View>
+                  {pokemon?.stats.map((stat) => (
+                    <View key={stat.stat.name} style={styles.statRow}>
+                      <Text style={styles.statName}>{stat.stat.name}:</Text>
+                      <Text style={styles.statValue}>{stat.base_stat}</Text>
+                    </View>
+                  ))}
                 </View>
-              ))}
+                <View style={{ marginLeft: 64 }}>
+                  <RadarChart
+                    data={pokemon?.stats.map((stat) => {
+                      const statName =
+                        stat.stat.name.charAt(0).toUpperCase() +
+                        stat.stat.name.slice(1);
+                      const statValue = stat.base_stat;
+                      return {
+                        label: statName,
+                        value: statValue,
+                      };
+                    })}
+                    stroke={[
+                      "#006176",
+                      "#006176",
+                      "#006176",
+                      "#006176",
+                      "#000000",
+                    ]}
+                    labelSize={12}
+                    labelColor={colors.onSurface}
+                    strokeWidth={[0.5, 0.5, 0.5, 0.5, 1]}
+                    strokeOpacity={[1, 1, 1, 1, 1]}
+                    gradientColor={{
+                      startColor: colors.surface,
+                      endColor: colors.surface,
+                      count: 5,
+                    }}
+                    maxValue={200}
+                    dataFillColor="#23c55e50"
+                    size={200}
+                  />
+                </View>
+              </View>
 
               <Text style={styles.sectionTitle}>Abilities</Text>
               {pokemon?.abilities.map((ability) => (
@@ -281,6 +330,11 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 16,
     textTransform: "capitalize",
+  },
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   statRow: {
     flexDirection: "row",

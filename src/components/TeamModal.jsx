@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Dialog, Portal, TextInput, Button } from "react-native-paper";
 import WheelColorPicker from "react-native-wheel-color-picker";
 import { TeamsContext } from "../providers/TeamsContext";
+import Toast from "react-native-toast-message";
 
 const TeamModal = ({ visible, onDismiss, onSubmit, teamToEdit }) => {
   const [pickerTarget, setPickerTarget] = useState(null);
@@ -122,7 +123,10 @@ const TeamModal = ({ visible, onDismiss, onSubmit, teamToEdit }) => {
           <Button
             onPress={() => {
               if (!teamName) {
-                alert("Por favor, insira um nome para o time.");
+                Toast.show({
+                  type: "error",
+                  text1: "Por favor, insira um nome para o time.",
+                });
                 return;
               }
               handleSave();
@@ -145,7 +149,7 @@ const styles = StyleSheet.create({
   },
   colorButton: {
     flex: 1,
-    height: 40,
+    height: 50,
     borderRadius: 6,
     justifyContent: "center",
     alignItems: "center",

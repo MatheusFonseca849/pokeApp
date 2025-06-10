@@ -58,7 +58,6 @@ const ItemsScreen = () => {
         item.url.slice(34, -1) === searchItemText
       );
     });
-    console.log(filteredItems);
     setItems(filteredItems);
   };
 
@@ -112,7 +111,6 @@ const ItemsScreen = () => {
           keyExtractor={(item) => item.name}
           renderItem={({ item }) => {
             const id = item.url.split("/").filter(Boolean).pop();
-            console.log(id);
             return (
               <ItemCard
                 item={item}

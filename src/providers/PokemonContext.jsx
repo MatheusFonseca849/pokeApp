@@ -14,6 +14,7 @@ export const PokemonContext = createContext();
 
 export const PokemonProvider = ({ children }) => {
   const [pokeList, setPokeList] = useState([]);
+  const [unfilteredPokeList, setUnfilteredPokeList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [next, setNext] = useState(null);
   const [previous, setPrevious] = useState(null);
@@ -52,14 +53,14 @@ export const PokemonProvider = ({ children }) => {
   const loadPokemonData = async () => {
     setLoading(true);
     try {
-      // 1. First load favorites from AsyncStorage
+      // First load favorites from AsyncStorage
       const favorites = await AsyncStorage.getItem("@favorites");
       if (favorites) {
         const favoritesList = JSON.parse(favorites);
         setFavoriteArray(favoritesList);
       }
 
-      // 2. Check for cached Pokemon list
+      // Check for cached Pokemon list
       const cachedPokeList = await AsyncStorage.getItem("@pokeList");
       if (cachedPokeList) {
         const pokeListData = JSON.parse(cachedPokeList);
@@ -71,12 +72,11 @@ export const PokemonProvider = ({ children }) => {
         await loadPokemon();
       }
 
-      // 3. Optionally load the full database in background if needed
+      // Optionally load full database in background if needed
       const cachedDatabase = await AsyncStorage.getItem("@pokeDatabase");
       if (cachedDatabase) {
         setPokeDatabase(JSON.parse(cachedDatabase));
       } else if (pokeDatabase.length === 0) {
-        // Don't await this - let it load in background
         loadAllPokemon();
       }
     } catch (error) {
@@ -91,9 +91,18 @@ export const PokemonProvider = ({ children }) => {
       setLoading(true);
       setIsFiltering(false); // in case user is clearing filters
       const response = await axios.get(url);
-      setPokeList(response.data.results);
+      const results = response.data.results;
+      setPokeList(results);
+      setUnfilteredPokeList(results); // Store an unfiltered copy
       setNext(response.data.next);
       setPrevious(response.data.previous ?? null);
+
+      // Cache the loaded data
+      await AsyncStorage.setItem("@pokeList", JSON.stringify({
+        results: results,
+        next: response.data.next,
+        previous: response.data.previous
+      }));
     } catch (error) {
       console.error("Failed to load Pokémon:", error);
     } finally {
@@ -104,29 +113,89 @@ export const PokemonProvider = ({ children }) => {
   const loadAllPokemon = async () => {
     setLoading(true);
 
-    const cachedDatabase = await AsyncStorage.getItem("@pokeDatabase");
-    if (cachedDatabase) {
-      setPokeDatabase(JSON.parse(cachedDatabase));
+    // Check if we have cached enhanced database with types
+    const cachedEnhancedDatabase = await AsyncStorage.getItem("@pokeDatabase_withTypes");
+    if (cachedEnhancedDatabase) {
+      setPokeDatabase(JSON.parse(cachedEnhancedDatabase));
       setLoading(false);
-      console.log("Using cached pokemon database");
       return;
     }
 
-    console.log("Fetching full pokemon database");
+    // Check for regular cached database
+    const cachedDatabase = await AsyncStorage.getItem("@pokeDatabase");
+    if (cachedDatabase) {
+      const basicPokemonList = JSON.parse(cachedDatabase);
+      setPokeDatabase(basicPokemonList);
+      
+      // Enhance the database with types in background
+      enhancePokemonWithTypes(basicPokemonList);
+      return;
+    }
+
+    // If no cache exists, fetch fresh data
     axios
       .get(`${baseUrl}pokemon?limit=100000&offset=0`)
       .then((response) => {
         setPokeDatabase(response.data.results);
         setLoading(false);
+        
+        // Cache basic data
         AsyncStorage.setItem(
           "@pokeDatabase",
           JSON.stringify(response.data.results)
         );
+        
+        // Enhance with types in background
+        enhancePokemonWithTypes(response.data.results);
       })
       .catch((error) => {
         console.error("Failed to load Pokémon:", error);
         setLoading(false);
       });
+  };
+
+  const enhancePokemonWithTypes = async (basicPokemonList) => {
+    try {
+      // Get all types
+      const typesResponse = await axios.get(`${baseUrl}type`);
+      const types = typesResponse.data.results;
+      
+      // Create a map to easily update Pokemon with their types
+      const pokemonMap = {};
+      basicPokemonList.forEach(pokemon => {
+        pokemonMap[pokemon.name] = {
+          ...pokemon,
+          types: [] // Initialize empty types
+        };
+      });
+      
+      // Process each type
+      for (const type of types) {
+        const typeData = await axios.get(type.url);
+        
+        // For each Pokemon of this type
+        typeData.data.pokemon.forEach(p => {
+          const pokemonName = p.pokemon.name;
+          
+          // Add type to Pokemon if it exists in map
+          if (pokemonMap[pokemonName]) {
+            pokemonMap[pokemonName].types.push(type.name);
+          }
+        });
+      }
+      
+      // Convert map back to array
+      const enhancedPokemonList = Object.values(pokemonMap);
+      
+      // Save to state and cache
+      setPokeDatabase(enhancedPokemonList);
+      setLoading(false);
+      await AsyncStorage.setItem("@pokeDatabase_withTypes", JSON.stringify(enhancedPokemonList));
+      
+    } catch (error) {
+      console.error("Error enhancing Pokemon with types:", error);
+      setLoading(false);
+    }
   };
 
   const loadFavoritePokemon = async () => {
@@ -139,7 +208,7 @@ export const PokemonProvider = ({ children }) => {
 
       const responses = await Promise.all(pokemonPromises);
 
-      // Transform the response data into the format PokeCard expects
+      // Transform the response data into expected format
       const pokemonData = responses.map((response) => ({
         name: response.data.name,
         url: `https://pokeapi.co/api/v2/pokemon/${response.data.id}/`,
@@ -162,7 +231,6 @@ export const PokemonProvider = ({ children }) => {
         pokemon.url.slice(34, -1) === searchText
       );
     });
-    console.log(filteredPokemon);
     setPokeList(filteredPokemon);
   };
 
@@ -174,7 +242,7 @@ export const PokemonProvider = ({ children }) => {
       const response = await axios.get(next);
       setPokeList(response.data.results);
       setNext(response.data.next);
-      setPrevious(response.data.previous ?? null); // clear if null
+      setPrevious(response.data.previous ?? null);
     } catch (error) {
       console.error("Failed to load next Pokémon:", error);
     } finally {
@@ -228,11 +296,11 @@ export const PokemonProvider = ({ children }) => {
     <PokemonContext.Provider
       value={{
         pokeList,
+        unfilteredPokeList,
         loading,
         next,
         previous,
         pokeDatabase,
-        pokeList,
         setPokeList,
         isFiltering,
         setIsFiltering,
