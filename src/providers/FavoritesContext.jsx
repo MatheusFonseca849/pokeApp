@@ -22,14 +22,13 @@ export const FavoritesProvider = ({ children }) => {
   const loadFavoriteItems = async () => {
     try {
       setLoading(true);
-      // Use Promise.all to wait for all API requests to complete
       const itemPromises = favoriteItemIds.map((id) =>
         axios.get(`${baseUrl}item/${id}`)
       );
 
       const responses = await Promise.all(itemPromises);
 
-      // Transform the response data into the format ItemCard expects
+      // Transform response data into expected format
       const itemData = responses.map((response) => ({
         name: response.data.name,
         url: `https://pokeapi.co/api/v2/item/${response.data.id}/`,

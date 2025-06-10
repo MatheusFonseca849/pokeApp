@@ -17,11 +17,11 @@ import { useNavigation } from "@react-navigation/native"
 const { height } = Dimensions.get('window');
 
 const AddPokemonModal = ({ visible, onDismiss, teamId, teamColor }) => {
-    const { searchPokemon, searchText, pokeList, next } = useContext(PokemonContext);
+    const { searchPokemon, searchText, unfilteredPokeList, pokeList, next } = useContext(PokemonContext);
     
     const { addPokemonToTeam, removePokemonFromTeam, teams } = useContext(TeamsContext);
     const [addedPokemonUrls, setAddedPokemonUrls] = useState([]);
-    const [localPokeList, setLocalPokeList] = useState(pokeList);
+    const [localPokeList, setLocalPokeList] = useState(unfilteredPokeList);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [hasMoreData, setHasMoreData] = useState(true);
     const [localNext, setLocalNext] = useState(next);
@@ -40,14 +40,14 @@ const AddPokemonModal = ({ visible, onDismiss, teamId, teamColor }) => {
         }
     }, [visible, teamId]);
 
-    // Update local state when modal opens or pokeList changes
+    // Update local state when modal opens or unfilteredPokeList changes
     useEffect(() => {
         if (visible) {
-          setLocalPokeList(pokeList);
+          setLocalPokeList(unfilteredPokeList);
           setLocalNext(next);
           setHasMoreData(!!next);
         }
-      }, [visible, pokeList, next]);
+      }, [visible, unfilteredPokeList, next]);
 
     const handleAddPokemon = (pokemon) => {
         // Check if team is full using the current team data
@@ -66,11 +66,11 @@ const AddPokemonModal = ({ visible, onDismiss, teamId, teamColor }) => {
     useEffect(() => {
         if (searchText === '') {
           // Reset to initial state when search is cleared
-          setLocalPokeList(pokeList);
+          setLocalPokeList(unfilteredPokeList);
           setLocalNext(next);
           setHasMoreData(!!next);
         }
-      }, [searchText]);
+      }, [searchText, unfilteredPokeList]);
 
     const handleRemovePokemon = (pokemon) => {
         removePokemonFromTeam(teamId, pokemon)
