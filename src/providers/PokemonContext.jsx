@@ -98,11 +98,14 @@ export const PokemonProvider = ({ children }) => {
       setPrevious(response.data.previous ?? null);
 
       // Cache the loaded data
-      await AsyncStorage.setItem("@pokeList", JSON.stringify({
-        results: results,
-        next: response.data.next,
-        previous: response.data.previous
-      }));
+      await AsyncStorage.setItem(
+        "@pokeList",
+        JSON.stringify({
+          results: results,
+          next: response.data.next,
+          previous: response.data.previous,
+        })
+      );
     } catch (error) {
       console.error("Failed to load Pokémon:", error);
     } finally {
@@ -114,7 +117,9 @@ export const PokemonProvider = ({ children }) => {
     setLoading(true);
 
     // Check if we have cached enhanced database with types
-    const cachedEnhancedDatabase = await AsyncStorage.getItem("@pokeDatabase_withTypes");
+    const cachedEnhancedDatabase = await AsyncStorage.getItem(
+      "@pokeDatabase_withTypes"
+    );
     if (cachedEnhancedDatabase) {
       setPokeDatabase(JSON.parse(cachedEnhancedDatabase));
       setLoading(false);
@@ -126,7 +131,7 @@ export const PokemonProvider = ({ children }) => {
     if (cachedDatabase) {
       const basicPokemonList = JSON.parse(cachedDatabase);
       setPokeDatabase(basicPokemonList);
-      
+
       // Enhance the database with types in background
       enhancePokemonWithTypes(basicPokemonList);
       return;
@@ -138,13 +143,13 @@ export const PokemonProvider = ({ children }) => {
       .then((response) => {
         setPokeDatabase(response.data.results);
         setLoading(false);
-        
+
         // Cache basic data
         AsyncStorage.setItem(
           "@pokeDatabase",
           JSON.stringify(response.data.results)
         );
-        
+
         // Enhance with types in background
         enhancePokemonWithTypes(response.data.results);
       })
@@ -159,39 +164,41 @@ export const PokemonProvider = ({ children }) => {
       // Get all types
       const typesResponse = await axios.get(`${baseUrl}type`);
       const types = typesResponse.data.results;
-      
+
       // Create a map to easily update Pokemon with their types
       const pokemonMap = {};
-      basicPokemonList.forEach(pokemon => {
+      basicPokemonList.forEach((pokemon) => {
         pokemonMap[pokemon.name] = {
           ...pokemon,
-          types: [] // Initialize empty types
+          types: [], // Initialize empty types
         };
       });
-      
+
       // Process each type
       for (const type of types) {
         const typeData = await axios.get(type.url);
-        
+
         // For each Pokemon of this type
-        typeData.data.pokemon.forEach(p => {
+        typeData.data.pokemon.forEach((p) => {
           const pokemonName = p.pokemon.name;
-          
+
           // Add type to Pokemon if it exists in map
           if (pokemonMap[pokemonName]) {
             pokemonMap[pokemonName].types.push(type.name);
           }
         });
       }
-      
+
       // Convert map back to array
       const enhancedPokemonList = Object.values(pokemonMap);
-      
+
       // Save to state and cache
       setPokeDatabase(enhancedPokemonList);
       setLoading(false);
-      await AsyncStorage.setItem("@pokeDatabase_withTypes", JSON.stringify(enhancedPokemonList));
-      
+      await AsyncStorage.setItem(
+        "@pokeDatabase_withTypes",
+        JSON.stringify(enhancedPokemonList)
+      );
     } catch (error) {
       console.error("Error enhancing Pokemon with types:", error);
       setLoading(false);

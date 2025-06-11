@@ -8,9 +8,9 @@ import { ThemeContext } from "../providers/ThemeContext";
 const Tab = createBottomTabNavigator();
 
 const TabRoutes = () => {
-    const { theme } = useContext(ThemeContext);
-    return (
-        <Tab.Navigator
+  const { theme } = useContext(ThemeContext);
+  return (
+    <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarStyle: { backgroundColor: theme.colors.surface },
         tabBarActiveTintColor: theme.colors.primary,
@@ -19,36 +19,36 @@ const TabRoutes = () => {
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
-          if (route.name === 'FavoritePokemon') {
-            iconName = 'heart';
-          } else if (route.name === 'FavoriteItems') {
-            iconName = 'briefcase';
+          if (route.name === "FavoritePokemon") {
+            iconName = "heart";
+          } else if (route.name === "FavoriteItems") {
+            iconName = "briefcase";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#4264a8',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: "#4264a8",
+        tabBarInactiveTintColor: "gray",
       })}
     >
-          <Tab.Screen 
-        name="FavoritePokemon" 
+      <Tab.Screen
+        name="FavoritePokemon"
         component={FavoritesScreen}
-        options={{ 
+        options={{
           title: "Favorite Pokémon",
-          headerShown: false 
+          headerShown: false,
         }}
       />
-      <Tab.Screen 
-        name="FavoriteItems" 
+      <Tab.Screen
+        name="FavoriteItems"
         component={FavoriteItemsScreen}
-        options={{ 
+        options={{
           title: "Favorite Items",
-          headerShown: false 
+          headerShown: false,
         }}
-      />  
-        </Tab.Navigator>
-    )
-}
+      />
+    </Tab.Navigator>
+  );
+};
 
-export default TabRoutes
+export default TabRoutes;

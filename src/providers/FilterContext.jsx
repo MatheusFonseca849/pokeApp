@@ -10,7 +10,8 @@ const FilterProvider = ({ children }) => {
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [generations, setGenerations] = useState([]);
   const [selectedGenerations, setSelectedGenerations] = useState([]);
-  const [isUsingEnhancedFiltering, setIsUsingEnhancedFiltering] = useState(false);
+  const [isUsingEnhancedFiltering, setIsUsingEnhancedFiltering] =
+    useState(false);
   const hasLoaded = useRef(false);
 
   const loadFilterData = async () => {
@@ -97,49 +98,60 @@ const FilterProvider = ({ children }) => {
     setIsFiltering(false);
     loadPokemon();
   };
-  
+
   // Apply combined filters
-  const applyFilters = async (types = [], generations = [], setPokeList, loadPokemon) => {
+  const applyFilters = async (
+    types = [],
+    generations = [],
+    setPokeList,
+    loadPokemon
+  ) => {
     setIsFiltering(true);
-    
+
     // If no filters active, reset to default list
     if (types.length === 0 && generations.length === 0) {
       setIsFiltering(false);
       loadPokemon();
       return;
     }
-    
+
     try {
       // Check if enhanced database in AsyncStorage with type information exists
-      const cachedEnhancedDatabase = await AsyncStorage.getItem("@pokeDatabase_withTypes");
-      
+      const cachedEnhancedDatabase = await AsyncStorage.getItem(
+        "@pokeDatabase_withTypes"
+      );
+
       // Case 1: Only type filters selected & enhanced database available
-      if (types.length > 0 && generations.length === 0 && cachedEnhancedDatabase) {
+      if (
+        types.length > 0 &&
+        generations.length === 0 &&
+        cachedEnhancedDatabase
+      ) {
         setIsUsingEnhancedFiltering(true);
         const enhancedPokemonList = JSON.parse(cachedEnhancedDatabase);
-        
+
         // Apply type filters
-        const filteredList = enhancedPokemonList.filter(pokemon => 
-          types.every(type => pokemon.types?.includes(type))
+        const filteredList = enhancedPokemonList.filter((pokemon) =>
+          types.every((type) => pokemon.types?.includes(type))
         );
-        
+
         // Update the Pokemon list with filtered results
         setPokeList(filteredList);
       }
-      
+
       // Case 2: Only generation filters selected
       else if (types.length === 0 && generations.length > 0) {
         // Use the existing generation filter function
         getPokemonByGenerations(generations, setPokeList);
       }
-      
+
       // Case 3: Both type and generation filters active
       else if (types.length > 0 && generations.length > 0) {
         // Get Pokemon from the selected generations
         const promises = generations.map((generation) =>
           axios.get(`${baseUrl}generation/${generation}`)
         );
-        
+
         const responses = await Promise.all(promises);
         const pokemonFromGenerations = responses.flatMap((res) =>
           res.data.pokemon_species.map((p) => {
@@ -151,34 +163,36 @@ const FilterProvider = ({ children }) => {
             };
           })
         );
-        
+
         // Filter by selected types
         if (cachedEnhancedDatabase) {
           // Use enhanced database to filter by type if available
           const enhancedPokemonList = JSON.parse(cachedEnhancedDatabase);
-          
+
           // Filter enhanced list by selected types
-          const typeFilteredList = enhancedPokemonList.filter(pokemon => 
-            types.every(type => pokemon.types?.includes(type))
+          const typeFilteredList = enhancedPokemonList.filter((pokemon) =>
+            types.every((type) => pokemon.types?.includes(type))
           );
-          
+
           // Find intersection with Pokemon from selected generations
-          const combinedFilteredList = typeFilteredList.filter(typePokemon => 
-            pokemonFromGenerations.some(genPokemon => 
-              genPokemon.name === typePokemon.name
+          const combinedFilteredList = typeFilteredList.filter((typePokemon) =>
+            pokemonFromGenerations.some(
+              (genPokemon) => genPokemon.name === typePokemon.name
             )
           );
-          
+
           setPokeList(combinedFilteredList);
         } else {
           // Fall back to API-based filtering if enhanced database isn't available
           // Get Pokemon of selected types
-          const promises = types.map((type) => axios.get(`${baseUrl}type/${type}`));
+          const promises = types.map((type) =>
+            axios.get(`${baseUrl}type/${type}`)
+          );
           const responses = await Promise.all(promises);
           const pokemonLists = responses.map((res) =>
             res.data.pokemon.map((p) => p.pokemon)
           );
-          
+
           // Find intersection of Pokemon with selected types
           const intersectionList =
             pokemonLists.length === 1
@@ -186,18 +200,19 @@ const FilterProvider = ({ children }) => {
               : pokemonLists.reduce((a, b) => {
                   return a.filter((pokeA) =>
                     b.some(
-                      (pokeB) => pokeB.url.slice(34, -1) === pokeA.url.slice(34, -1)
+                      (pokeB) =>
+                        pokeB.url.slice(34, -1) === pokeA.url.slice(34, -1)
                     )
                   );
                 });
-          
+
           // Final intersection with generation-filtered Pokemon
-          const finalList = intersectionList.filter(typePokemon => 
-            pokemonFromGenerations.some(genPokemon => 
-              genPokemon.name === typePokemon.name
+          const finalList = intersectionList.filter((typePokemon) =>
+            pokemonFromGenerations.some(
+              (genPokemon) => genPokemon.name === typePokemon.name
             )
           );
-          
+
           setPokeList(finalList);
         }
       } else {
@@ -207,7 +222,7 @@ const FilterProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Error applying combined filters:", error);
-      
+
       // Fall back to original basic filtering if error occurs
       if (types.length > 0 && generations.length === 0) {
         getPokemonByType(types, setPokeList);
@@ -318,7 +333,7 @@ const FilterProvider = ({ children }) => {
         generations,
         toggleGenerationSelection,
         isUsingEnhancedFiltering,
-        applyFilters
+        applyFilters,
       }}
     >
       {children}

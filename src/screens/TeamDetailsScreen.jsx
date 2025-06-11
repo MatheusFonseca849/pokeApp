@@ -64,8 +64,12 @@ const TeamDetailsScreen = ({ route }) => {
       >
         <Card.Title title={`${team.name} Details`} />
         <Card.Content>
-          <Text style={{ marginBottom: 10, color: colors.onSurface }}>Team Color: {team.color}</Text>
-          <Text style={{ color: colors.onSurface }}>Pokemon Count: {team.pokemon.length}</Text>
+          <Text style={{ marginBottom: 10, color: colors.onSurface }}>
+            Team Color: {team.color}
+          </Text>
+          <Text style={{ color: colors.onSurface }}>
+            Pokemon Count: {team.pokemon.length}
+          </Text>
         </Card.Content>
         <FlatList
           contentContainerStyle={{
@@ -76,18 +80,18 @@ const TeamDetailsScreen = ({ route }) => {
             backgroundColor: team.backgroundColor,
             margin: 12,
           }}
-          ListFooterComponent={() => (  
-              team.pokemon.length < 6 ? (
+          ListFooterComponent={() =>
+            team.pokemon.length < 6 ? (
               <TouchableOpacity
                 onPress={(e) => {
-                  e.preventDefault()
-                  onAddPokemon()
+                  e.preventDefault();
+                  onAddPokemon();
                 }}
               >
                 <IconButton icon="plus" size={48} />
               </TouchableOpacity>
             ) : null
-          )}
+          }
           data={team.pokemon}
           renderItem={({ item }) => {
             const pokemonId = item.url.slice(34, -1);
@@ -118,7 +122,12 @@ const TeamDetailsScreen = ({ route }) => {
           }}
         />
       </Card>
-      <AddPokemonModal visible={modalVisible} onDismiss={() => setModalVisible(false)} teamId={team.id} teamColor={team.color} />
+      <AddPokemonModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        teamId={team.id}
+        teamColor={team.color}
+      />
     </SafeAreaView>
   );
 };

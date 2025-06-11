@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ActivityIndicator, Text } from "react-native";
 import { FlatList } from "react-native";
-import PaginationButton from "../components/PaginationButton";
 import GestureRecognizer from "react-native-swipe-gestures";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ItemCard from "../components/ItemCard";
@@ -9,14 +8,19 @@ import { useContext } from "react";
 import { FavoritesContext } from "../providers/FavoritesContext";
 import { Searchbar } from "react-native-paper";
 import { ThemeContext } from "../providers/ThemeContext";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const ItemsScreen = () => {
+  const navigation = useNavigation();
   const { theme } = useContext(ThemeContext);
   const [items, setItems] = useState([]);
   const [itemsDatabase, setItemsDatabase] = useState([]);
   const [searchItemText, setSearchItemText] = useState("");
   const [next, setNext] = useState("");
-  const [previous, setPrevious] = useState("");
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMoreData, setHasMoreData] = useState(true);
+  const [localNext, setLocalNext] = useState("");
   const {
     favoriteItemIds,
     loadFavoriteItems,
@@ -41,6 +45,11 @@ const ItemsScreen = () => {
     loadItems();
     loadAllItems();
   }, []);
+  
+  useEffect(() => {
+    setLocalNext(next);
+    setHasMoreData(!!next);
+  }, [next]);
 
   const loadItems = async () => {
     const response = await fetch("https://pokeapi.co/api/v2/item");
@@ -60,21 +69,47 @@ const ItemsScreen = () => {
     });
     setItems(filteredItems);
   };
+  
+  const fetchMoreItems = async () => {
+    // Don't fetch if already loading, no more data, or searching
+    if (isLoadingMore || !hasMoreData || searchItemText !== "") {
+      return;
+    }
 
-  const handleNext = async () => {
-    const response = await fetch(next);
-    const data = await response.json();
-    setItems(data.results);
-    setNext(data.next);
-    setPrevious(data.previous);
+    try {
+      setIsLoadingMore(true);
+      const response = await axios.get(localNext);
+
+      // Append new results to existing list
+      setItems((prevItems) => [...prevItems, ...response.data.results]);
+
+      // Update pagination data
+      setLocalNext(response.data.next);
+      setHasMoreData(!!response.data.next);
+    } catch (error) {
+      console.error("Error loading more items:", error);
+    } finally {
+      setIsLoadingMore(false);
+    }
   };
 
-  const handlePrevious = async () => {
-    const response = await fetch(previous);
-    const data = await response.json();
-    setItems(data.results);
-    setNext(data.next);
-    setPrevious(data.previous);
+  const renderFooter = () => {
+    if (!isLoadingMore || searchItemText !== "") return null;
+
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="small" color={theme.colors.primary} />
+        <Text style={{ color: theme.colors.onBackground }}>Loading more...</Text>
+      </View>
+    );
+  };
+  
+  const handleSwipeLeft = () => {
+    navigation.navigate('Teams');
+  };
+  
+  const handleSwipeRight = () => {
+    navigation.navigate('Favorites');
   };
 
   useEffect(() => {
@@ -83,8 +118,8 @@ const ItemsScreen = () => {
 
   return (
     <GestureRecognizer
-      onSwipeLeft={handleNext}
-      onSwipeRight={handlePrevious}
+      onSwipeLeft={handleSwipeLeft}
+      onSwipeRight={handleSwipeRight}
       config={swipeConfig}
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
@@ -122,32 +157,40 @@ const ItemsScreen = () => {
               />
             );
           }}
+          onEndReached={searchItemText === "" ? fetchMoreItems : null}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
+          removeClippedSubviews={true}
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={10}
         />
-        <View style={styles.buttonContainer}>
-          {previous && (
-            <PaginationButton action={handlePrevious} icon={"chevron-left"} />
-          )}
-          {next && (
-            <PaginationButton action={handleNext} icon={"chevron-right"} />
-          )}
-        </View>
       </SafeAreaView>
     </GestureRecognizer>
   );
 };
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-  },
   container: {
     flex: 1,
     width: "100%",
   },
   list: {
     marginBottom: 5,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+  },
+  searchBar: {
+    flex: 1,
+    marginVertical: 4,
+  },
+  loaderContainer: {
+    paddingVertical: 16,
+    alignItems: "center",
   },
 });
 
