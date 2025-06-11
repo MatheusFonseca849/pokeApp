@@ -5,9 +5,12 @@ import { PokemonContext } from "../providers/PokemonContext";
 import { FlatList } from "react-native-gesture-handler";
 import PokeCard from "../components/PokeCard";
 import { SafeAreaView } from "react-native-safe-area-context";
+import GestureRecognizer from "react-native-swipe-gestures";
 import { ThemeContext } from "../providers/ThemeContext";
+import { useNavigation } from "@react-navigation/native";
 
 const FavoritesScreen = () => {
+  const navigation = useNavigation();
   const { theme } = useContext(ThemeContext);
   const { favoriteArray, loadFavoritePokemon, favoritePokemon, loading } =
     useContext(PokemonContext);
@@ -16,7 +19,28 @@ const FavoritesScreen = () => {
     loadFavoritePokemon();
   }, [favoriteArray]);
 
+  const swipeConfig = {
+    velocityThreshold: 0.3,
+    directionalOffsetThreshold: 120,
+    gestureIsClickThreshold: 5,
+  }
+
+  const handleSwipeLeft = () => {
+    navigation.navigate('Items');
+  };
+  
+  const handleSwipeRight = () => {
+    navigation.navigate('Home');
+  };
+
   return (
+    <GestureRecognizer
+      onSwipeLeft={handleSwipeLeft}
+      onSwipeRight={handleSwipeRight}
+      config={swipeConfig}
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       edges={["bottom", "left", "right"]}
@@ -53,6 +77,7 @@ const FavoritesScreen = () => {
         )}
       </View>
     </SafeAreaView>
+    </GestureRecognizer>
   );
 };
 

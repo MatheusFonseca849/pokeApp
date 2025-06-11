@@ -55,7 +55,6 @@ const ItemDetailsScreen = ({ route }) => {
     navigation.setParams({ id: nextId });
   };
 
-
   if (loading) {
     return (
       <View

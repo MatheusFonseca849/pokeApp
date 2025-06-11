@@ -1,16 +1,31 @@
-import { StyleSheet, View, FlatList, Animated, Easing, Text } from "react-native";
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  Animated,
+  Easing,
+  Text,
+} from "react-native";
 import React, { useContext, useEffect, useState, useRef } from "react";
-import { IconButton, Searchbar, List, ActivityIndicator } from "react-native-paper";
+import {
+  IconButton,
+  Searchbar,
+  List,
+  ActivityIndicator,
+} from "react-native-paper";
 import GestureRecognizer from "react-native-swipe-gestures";
 import { PokemonContext } from "../providers/PokemonContext";
+import axios from "axios";
 import PokeCard from "../components/PokeCard";
 import PaginationButton from "../components/PaginationButton";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FilterContext } from "../providers/FilterContext";
 import { ThemeContext } from "../providers/ThemeContext";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
   const { theme } = useContext(ThemeContext);
   const [contentHeight, setContentHeight] = useState(0);
 
@@ -43,8 +58,12 @@ export default function HomeScreen() {
     onSwipeLeft,
     onSwipeRight,
     swipeConfig,
-    loading
+    loading,
   } = useContext(PokemonContext);
+  
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMoreData, setHasMoreData] = useState(true);
+  const [localNext, setLocalNext] = useState(next);
 
   const animatedHeight = useRef(new Animated.Value(0)).current;
 
@@ -52,6 +71,11 @@ export default function HomeScreen() {
     loadPokemon();
     loadAllPokemon();
   }, []);
+  
+  useEffect(() => {
+    setLocalNext(next);
+    setHasMoreData(!!next);
+  }, [next]);
 
   useEffect(() => {
     if (filtersVisible && pokeTypes.length === 0) {
@@ -89,12 +113,54 @@ export default function HomeScreen() {
       }).start();
     }
   };
+  
+  const fetchMorePokemon = async () => {
+    // Don't fetch if already loading, no more data, or searching
+    if (isLoadingMore || !hasMoreData || searchText !== "" || isFiltering) {
+      return;
+    }
+
+    try {
+      setIsLoadingMore(true);
+      const response = await axios.get(localNext);
+
+      // Append new results to existing list
+      setPokeList((prevList) => [...prevList, ...response.data.results]);
+
+      // Update pagination data
+      setLocalNext(response.data.next);
+      setHasMoreData(!!response.data.next);
+    } catch (error) {
+      console.error("Error loading more Pokemon:", error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const renderFooter = () => {
+    if (!isLoadingMore || searchText !== "" || isFiltering) return null;
+
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="small" color={theme.colors.primary} />
+        <Text style={{ color: theme.colors.onBackground }}>Loading more...</Text>
+      </View>
+    );
+  };
+
+  const handleSwipeLeft = () => {
+    navigation.navigate('Favorites');
+  };
+  
+  const handleSwipeRight = () => {
+    navigation.navigate('Teams');
+  };
 
   return (
     <GestureRecognizer
       style={[styles.container, { backgroundColor: theme.colors.background }]}
-      onSwipeLeft={onSwipeLeft}
-      onSwipeRight={onSwipeRight}
+      onSwipeLeft={handleSwipeLeft}
+      onSwipeRight={handleSwipeRight}
       config={swipeConfig}
     >
       <SafeAreaView
@@ -236,25 +302,23 @@ export default function HomeScreen() {
             </Text>
           </View>
         ) : (
-        <FlatList
-          style={styles.list}
-          data={pokeList}
-          keyExtractor={(item) => item.name}
-          renderItem={({ item }) => {
-            return <PokeCard item={item} />;
-          }}
-        />
+          <FlatList
+            style={styles.list}
+            data={pokeList}
+            keyExtractor={(item) => item.name}
+            renderItem={({ item }) => {
+              return <PokeCard item={item} />;
+            }}
+            onEndReached={searchText === "" && !isFiltering ? fetchMorePokemon : null}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={renderFooter}
+            removeClippedSubviews={true}
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={10}
+          />
         )}
-        {searchText == "" && !isFiltering && (
-          <View style={styles.buttonContainer}>
-            {previous && (
-              <PaginationButton action={handlePrevious} icon={"chevron-left"} />
-            )}
-            {next && (
-              <PaginationButton action={handleNext} icon={"chevron-right"} />
-            )}
-          </View>
-        )}
+        
       </SafeAreaView>
     </GestureRecognizer>
   );
@@ -263,6 +327,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   list: {
     marginBottom: 5,
+  },
+  loaderContainer: {
+    paddingVertical: 16,
+    alignItems: "center",
   },
   container: {
     flex: 1,

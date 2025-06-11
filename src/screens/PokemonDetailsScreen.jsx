@@ -42,16 +42,16 @@ const PokemonDetailsScreen = ({ route }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
       if (route.params?.returnToModal) {
         // Set data to reopen modal when returning
         setModalReopenData({
           teamId: route.params.teamId,
-          teamColor: route.params.teamColor
+          teamColor: route.params.teamColor,
         });
       }
     });
-  
+
     return unsubscribe;
   }, [navigation]);
 

@@ -35,27 +35,26 @@ const TeamCard = ({ team, onPress, onEdit, onAddPokemon }) => {
         <FlatList
           style={{ flex: 1, flexDirection: "row" }}
           data={team.pokemon}
-          ListFooterComponent={() => 
-            team.pokemon.length < 6 ? 
-            <TouchableOpacity
-            onPress={(e) => {
-              e.preventDefault()
-              onAddPokemon()
-            }}
-            >
-
-              <IconButton icon="plus" size={24} />
-            </TouchableOpacity>
-            : null
+          ListFooterComponent={() =>
+            team.pokemon.length < 6 ? (
+              <TouchableOpacity
+                onPress={(e) => {
+                  e.preventDefault();
+                  onAddPokemon();
+                }}
+              >
+                <IconButton icon="plus" size={24} />
+              </TouchableOpacity>
+            ) : null
           }
           renderItem={({ item }) => {
             const pokemonId = item.url.slice(34, -1);
             const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`;
             return (
               <Image
-              key={pokemonId}
-              source={{ uri: imageUrl }}
-              style={{ width: 48, height: 48 }}
+                key={pokemonId}
+                source={{ uri: imageUrl }}
+                style={{ width: 48, height: 48 }}
               />
             );
           }}
