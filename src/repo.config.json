@@ -2,7 +2,7 @@
     "published": true,
     "title": "PokeApp",
     "info": "Projeto frontend apresentado como projeto final na disciplina de Desenvolvimento Mobile do curso de Análise e Desenvolvimento de Sistemas.",
-    "thumbnail": "assets/screenshot.png",
+    "thumbnail": "./assets/thumbnail.jpeg",
     "branch": "main",
     "customConfig": {
         "tags": [
