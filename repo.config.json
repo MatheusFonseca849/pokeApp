@@ -1,0 +1,22 @@
+{
+    "published": true,
+    "title": "PokeApp",
+    "info": "Mobile frontend project presented as the final project for the Mobile Software Development Discipline of the Systems Analysis and Development course.",
+    "thumbnail": "./assets/thumbnail.jpeg",
+    "branch": "main",
+    "customConfig": {
+        "tags": [
+            "react-native",
+            "expo",
+            "pokeApp",
+            "pokemon",
+            "mobile",
+            "app",
+            "javascript"
+        ],
+        "infoPT":"Projeto frontend apresentado como projeto final na disciplina de Desenvolvimento Mobile do curso de Análise e Desenvolvimento de Sistemas.",
+        "featured": true,
+        "difficulty": "intermediate",
+        "color": "#F0F0F0"
+    }
+}
